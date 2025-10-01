@@ -317,9 +317,6 @@ local plugin_specs = {
     end,
   },
 
-  -- Faster footnote generation
-  { "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } },
-
   -- Vim tabular plugin for manipulate tabular, required by markdown plugins
   { "godlygeek/tabular", ft = { "markdown" } },
 
