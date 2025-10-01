@@ -317,24 +317,6 @@ local plugin_specs = {
     end,
   },
 
-  -- Markdown previewing (only for Mac and Windows)
-  {
-    "iamcco/markdown-preview.nvim",
-    enabled = function()
-      return vim.g.is_win or vim.g.is_mac
-    end,
-    build = "cd app && npm install && git restore .",
-    ft = { "markdown" },
-  },
-
-  {
-    "rhysd/vim-grammarous",
-    enabled = function()
-      return vim.g.is_mac
-    end,
-    ft = { "markdown" },
-  },
-
   { "chrisbra/unicode.vim", keys = { "ga" }, cmd = { "UnicodeSearch" } },
 
   -- Additional powerful text object for vim, this plugin should be studied
