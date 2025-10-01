@@ -25,6 +25,8 @@ This file contains detailed descriptions of Git-related plugin keymaps and usage
 - `<leader>gbd` - **Git branch delete** - Delete branch (prompts for name)
 - `<leader>gf` - **Git fetch** - Fetch from remote (prompts for options)
 - `<leader>gb` - **Git blame** - Show blame for selected lines (visual mode)
+- `<leader>gd` - **Open diffview** - Opens diffview for current changes
+- `<leader>gdd` - **Close diffview** - Closes diffview window
 
 **Commands** (type `:Git` followed by any git command):
 - `:Git` - Git status (same as `<leader>gs`)
@@ -370,11 +372,15 @@ func ProcessOrder(order *Order) (int, error) {
 - Compare branches side-by-side
 - Review changes before committing
 
-**Command**:
-- `:DiffviewOpen` - Open diff view for current changes
+**Keymaps** (integrated with vim-fugitive):
+- `<leader>gd` - **Open diffview** - Opens diffview for current changes
+- `<leader>gdd` - **Close diffview** - Closes diffview window
+
+**Commands**:
+- `:DiffviewOpen` - Open diff view for current changes (same as `<leader>gd`)
 - `:DiffviewOpen HEAD~1` - Compare with previous commit
 - `:DiffviewOpen main...feature` - Compare branches
-- `:DiffviewClose` - Close diff view
+- `:DiffviewClose` - Close diff view (same as `<leader>gdd`)
 
 **What you see**:
 ```
@@ -396,11 +402,11 @@ func ProcessOrder(order *Order) (int, error) {
 
 *Review changes before commit:*
 1. Made changes to multiple files
-2. Run `:DiffviewOpen`
+2. Press `<leader>gd` (or run `:DiffviewOpen`)
 3. File panel shows: `handler.go`, `types.go`, `utils.go`
 4. Click `handler.go` → Diff shows changes
 5. Review each file's changes
-6. Close with `:DiffviewClose`
+6. Press `<leader>gdd` (or `:DiffviewClose`) to close
 7. Stage and commit
 
 *Compare branches:*
@@ -429,22 +435,23 @@ func ProcessOrder(order *Order) (int, error) {
 
 | Plugin | Primary Use | Key Bindings | When to Use |
 |--------|-------------|--------------|-------------|
-| **vim-fugitive** | Git operations | `<leader>gs/gc/gpl/gpu` | Daily git workflow |
+| **vim-fugitive** | Git operations | `<leader>gs/gc/gpl/gpu/gd` | Daily git workflow |
 | **gitsigns.nvim** | Visual indicators | `]c [c <leader>hp/hb` | See changes, navigate hunks |
 | **git-conflict.nvim** | Merge conflicts | `co ct cb ]x [x` | Resolve conflicts |
 | **gitlinker.nvim** | Share code links | `<leader>gl <leader>gbr` | Share code with team |
 | **vim-flog** | History viewer | `:Flog` | Understand git history |
-| **diffview.nvim** | Enhanced diffs | `:DiffviewOpen` | Review changes visually |
+| **diffview.nvim** | Enhanced diffs | `<leader>gd/gdd` | Review changes visually |
 
 ## Typical Workflow
 
 ```
 1. Check status:        <leader>gs
-2. Review changes:      ]c (gitsigns) → <leader>hp
-3. Stage files:         s (in fugitive status window)
-4. Commit:              cc (in fugitive status window)
-5. Push:                <leader>gpu
-6. Share code:          <leader>gl (gitlinker)
+2. Review changes:      <leader>gd (diffview) OR ]c (gitsigns) → <leader>hp
+3. Close diffview:      <leader>gdd
+4. Stage files:         s (in fugitive status window)
+5. Commit:              cc (in fugitive status window)
+6. Push:                <leader>gpu
+7. Share code:          <leader>gl (gitlinker)
 ```
 
 ---
