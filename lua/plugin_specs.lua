@@ -86,13 +86,6 @@ local plugin_specs = {
     end,
   },
   {
-    "nvim-telescope/telescope.nvim",
-    cmd = "Telescope",
-    dependencies = {
-      "nvim-telescope/telescope-symbols.nvim",
-    },
-  },
-  {
     "ibhagwan/fzf-lua",
     config = function()
       require("config.fzf-lua")
