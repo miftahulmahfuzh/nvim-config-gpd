@@ -1107,3 +1107,481 @@ itemID    // move here, press . → "itemID"
 **Plugin support**: Integrates with vim-repeat for `.` repetition
 
 ---
+
+## vim-matchup
+
+**Purpose**: Enhanced `%` motion for navigating between matching pairs. Extends Vim's built-in `%` to work with language-specific keywords (if/else, for/end, func/return) and provides better highlighting and navigation for nested structures.
+
+**Why useful for Go**:
+- Navigate between matching braces in functions, structs, if/else blocks
+- Jump between `if` and its closing brace
+- Jump between `for` loop start and end
+- Navigate nested structures (maps, slices, function calls)
+- Visual highlighting of matching pairs
+- Essential for understanding code structure and scope
+- Faster than manual scrolling to find matching braces
+
+**Keymaps**:
+
+**Basic navigation:**
+- `%` - **Jump to matching pair** (opening ↔ closing)
+- `g%` - **Jump backwards** to matching pair (reverse direction)
+- `[%` - **Jump to previous outer match** (go to opening of outer scope)
+- `]%` - **Jump to next outer match** (go to closing of outer scope)
+
+**Visual selection:**
+- `v%` - Visual select from cursor to matching pair
+- `V%` - Linewise visual select to matching pair
+
+**Text objects:**
+- `i%` - Inside the nearest block (between matching pairs)
+- `a%` - Around the nearest block (including matching pairs)
+
+**What it matches:**
+
+**1. Brackets and braces:**
+- `()` - Parentheses
+- `[]` - Square brackets
+- `{}` - Curly braces
+- `<>` - Angle brackets
+
+**2. Go language keywords:**
+- `func` ↔ closing `}`
+- `if` ↔ `else` ↔ closing `}`
+- `for` ↔ closing `}`
+- `switch` ↔ `case` ↔ closing `}`
+- `select` ↔ `case` ↔ closing `}`
+
+**Go-specific examples:**
+
+**1. Navigate function blocks:**
+```go
+func ProcessOrder(order *Order) error {  // cursor on "func"
+    if order == nil {                     // press %
+        return errors.New("nil order")
+    }
+    return nil
+}  // jumps to closing brace
+```
+
+**2. Navigate if/else blocks:**
+```go
+if err != nil {     // cursor on "if", press %
+    return err      // jumps to closing }
+} else {            // press % again on "else"
+    return nil      // jumps to its closing }
+}
+```
+
+**3. Navigate nested structures:**
+```go
+// Outer to inner navigation
+func HandleRequest() {           // cursor here, press %
+    for _, item := range items { // jumps to outer closing }
+        if item.Valid {          // use [% to go to outer opening
+            process(item)
+        }
+    }
+}
+
+// Press % on opening { → jump to closing }
+// Press % on closing } → jump back to opening {
+```
+
+**4. Navigate parentheses in function calls:**
+```go
+result := CalculateTotal(
+    GetPrice(item),              // cursor on opening (
+    GetTax(location),            // press %
+    GetDiscount(coupon)          // jumps to closing )
+)
+```
+
+**5. Navigate map/slice literals:**
+```go
+users := map[string]User{      // cursor on {
+    "john": User{               // press %
+        Name: "John",
+        Age:  25,
+    },
+    "jane": User{
+        Name: "Jane",
+        Age:  30,
+    },
+}  // jumps to closing }
+
+// Press % on inner { → jump to its }
+// Press [% → jump to outer opening {
+```
+
+**6. Navigate complex nested brackets:**
+```go
+data := []map[string][]int{     // cursor on [
+    {                           // press %
+        "counts": []int{1, 2, 3},
+    },
+}  // jumps to matching ]
+
+// Navigate through nested levels:
+// - % on [ jumps to ]
+// - % on { jumps to }
+// - [% goes to previous outer opening
+// - ]% goes to next outer closing
+```
+
+**Example workflows:**
+
+*Check scope of function:*
+```go
+func ProcessPayment() {  // cursor on opening {
+    // ... 200 lines of code ...
+}
+// Press % → jump to closing }
+// Press % again → jump back to opening {
+```
+
+*Select entire block:*
+```go
+if err != nil {
+    log.Error(err)
+    return err
+}
+// Cursor on "if", press v% → visually select entire if block
+// Press d → delete entire block
+```
+
+*Navigate nested if statements:*
+```go
+if user != nil {           // cursor on outer "if"
+    if user.Active {       // press ]% → jump to outer closing }
+        process(user)
+    }
+}
+// Use [% to jump back to outer opening
+```
+
+*Find matching brace in complex code:*
+```go
+switch orderType {         // cursor on "switch"
+    case TypeA:            // press % cycles through
+        handleA()          // switch → case → closing }
+    case TypeB:
+        handleB()
+    default:
+        handleDefault()
+}  // lands here
+```
+
+*Visual select function body:*
+```go
+func ValidateUser(user *User) error {
+    // validation logic
+    return nil
+}
+// Cursor on opening {, press v%
+// → Selects entire function body
+// Press y → yank, d → delete, etc.
+```
+
+**Advanced usage:**
+
+**Text objects with motions:**
+```go
+// Delete inside matching pairs
+func Process() {
+    data := []int{1, 2, 3}
+}
+// Cursor on function, di% → delete inside function body
+
+// Change around matching pairs
+if condition {
+    doSomething()
+}
+// Cursor on if, ca% → change entire if block including braces
+```
+
+**Jump to outer scope:**
+```go
+func Outer() {
+    func Inner() {
+        if true {
+            // cursor here
+            // Press [% repeatedly to jump to:
+            // 1. if opening {
+            // 2. Inner() opening {
+            // 3. Outer() opening {
+        }
+    }
+}
+```
+
+**Highlighting:**
+- When cursor is on a bracket/keyword, matching pairs are highlighted
+- Makes it easy to see scope boundaries
+- Configurable highlight colors
+
+**Common patterns:**
+
+| Task | Command | Example |
+|------|---------|---------|
+| Find closing brace | `%` | `func() {` → `}` |
+| Select block | `v%` | Select if/for/func body |
+| Delete block content | `di%` | Delete inside braces |
+| Change entire block | `ca%` | Change including braces |
+| Jump to outer scope | `[%` | Go to parent block |
+| Jump to next scope | `]%` | Go to closing of parent |
+
+**Integration with other features:**
+
+*With vim-sandwich:*
+```go
+// Delete surrounding braces from block
+if condition {
+    code()
+}
+// Cursor on {, press sd{ → removes braces
+// Or use matchup: cursor on {, press % then delete
+```
+
+*With text objects:*
+```go
+// Combine with targets.vim
+func Process(a, b, c int) {
+    // Complex nesting
+}
+// % to navigate, cia to change arguments
+```
+
+**Tips:**
+
+1. **Double press**: Press `%` twice to return to original position
+2. **Visual selection**: `v%` is great for yanking/deleting entire blocks
+3. **Nested navigation**: Use `[%` and `]%` to jump between nesting levels
+4. **Highlighted matches**: Look for highlighted pairs to understand scope
+5. **Works in insert mode**: Can use `<C-\>%` in insert mode (if configured)
+
+**Difference from default Vim `%`:**
+
+| Feature | Default `%` | vim-matchup |
+|---------|-------------|-------------|
+| Braces `{}` | ✅ | ✅ |
+| Brackets `[]` | ✅ | ✅ |
+| Keywords (if/else) | ❌ | ✅ |
+| Highlighting | ❌ | ✅ |
+| Text objects | ❌ | ✅ `i%` `a%` |
+| Outer navigation | ❌ | ✅ `[%` `]%` |
+
+**Configuration**: Works automatically on load (`event = "BufRead"` in `lua/plugin_specs.lua`)
+
+---
+
+## vim-scriptease
+
+**Purpose**: Development and debugging tools for Vim/Neovim configuration. Provides commands for viewing loaded scripts, message history, and verbose output. Essential for **maintaining and debugging your Neovim config**, not for Go development.
+
+**Why useful**:
+- Debug Neovim configuration errors
+- Find which file sets a specific option or keymap
+- View message history in a scrollable buffer
+- List all loaded scripts and plugins
+- Troubleshoot plugin conflicts
+- Essential for config customization and maintenance
+
+**Commands**:
+
+**`:Scriptnames`** - List all loaded Vim scripts
+
+Shows numbered list of all loaded configuration files and plugins:
+```
+  1: ~/.config/nvim/init.lua
+  2: ~/.config/nvim/lua/plugin_specs.lua
+  3: ~/.config/nvim/lua/config/lsp.lua
+  4: ~/.local/share/nvim/lazy/lazy.nvim/init.lua
+  5: ~/.local/share/nvim/lazy/nvim-cmp/plugin/cmp.lua
+  ...
+```
+
+**Usage:**
+- See load order of scripts
+- Verify a plugin actually loaded
+- Find file path of a plugin
+- Debug "script not found" errors
+
+**`:Messages`** - View message history in a buffer
+
+Opens a new buffer with all Vim messages (better than `:messages`):
+- Scrollable like a normal buffer
+- Search with `/`
+- Copy error messages
+- Review startup errors
+- See plugin loading messages
+
+**Usage:**
+```vim
+:Messages
+" Scroll through with j/k
+" Search for errors: /Error
+" Copy error message: yy
+" Close: :q
+```
+
+**`:Verbose {level} {command}`** - Run command with verbose output
+
+Shows detailed information about where settings were last changed:
+
+```vim
+" Find where a setting was configured
+:Verbose set expandtab?
+" Output: expandtab
+"         Last set from ~/.config/nvim/lua/settings.lua line 15
+
+" Find where a keymap was defined
+:Verbose nmap <space>t
+" Output: <space>t  :Vista!!<CR>
+"         Last set from ~/.config/nvim/lua/config/vista.lua line 8
+
+" See all autocmds
+:Verbose autocmd BufRead
+" Shows: BufRead
+"        *  call s:LoadConfig()
+"        Last set from ~/.config/nvim/init.lua line 23
+```
+
+**Verbose levels:**
+- `:Verbose 1 {cmd}` - Basic info
+- `:Verbose 5 {cmd}` - Moderate detail
+- `:Verbose 15 {cmd}` - Very detailed (shows function calls)
+
+**Example workflows:**
+
+**1. Debug config startup error:**
+```vim
+" You see error on nvim startup but it disappears
+:Messages
+" Scroll through to find the error
+" Look for 'Error' or 'Failed'
+" Example: "Error executing lua: ...config/lsp.lua:42: attempt to index nil"
+" Now you know: lsp.lua line 42 has the error
+```
+
+**2. Find which file set an option:**
+```vim
+" You want to change tabstop but don't remember where it's set
+:Verbose set tabstop?
+" Output: tabstop=4
+"         Last set from ~/.config/nvim/lua/settings.lua line 8
+" Now open that file and change it
+```
+
+**3. Find keymap conflict:**
+```vim
+" Your keymap <space>f doesn't work
+:Verbose nmap <space>f
+" Output: <space>f  <cmd>FzfLua files<CR>
+"         Last set from ~/.config/nvim/lua/config/fzf-lua.lua line 15
+" Ah, fzf-lua already uses <space>f
+```
+
+**4. Check if plugin loaded:**
+```vim
+" Plugin not working, check if it loaded
+:Scriptnames
+" Search for plugin: /fugitive
+" If not found, plugin didn't load
+" Check plugin_specs.lua for conditions
+```
+
+**5. Debug autocommand:**
+```vim
+" LSP not attaching to Go files
+:Verbose autocmd FileType go
+" Shows which autocmds run for *.go files
+" Can see if LSP attach command is there
+```
+
+**6. Review plugin installation:**
+```vim
+" After installing new plugin
+:Messages
+" See: "lazy.nvim: Installed plugin-name"
+" Or: "Error installing plugin-name: ..."
+```
+
+**Common scenarios:**
+
+*Config not reloading:*
+```vim
+:Messages
+" Look for: "Error detected while processing..."
+" Find the problematic file and line number
+```
+
+*Keymap not working:*
+```vim
+:Verbose nmap <leader>gs
+" See: where it's defined, what it does
+" If multiple definitions, last one wins
+```
+
+*Plugin seems disabled:*
+```vim
+:Scriptnames
+" Ctrl-F to search: /plugin-name
+" If not found, check enabled = function() in plugin_specs.lua
+```
+
+*Option keeps getting overridden:*
+```vim
+:Verbose set background?
+" See which file sets it last
+" Move your setting after that file
+```
+
+**Tips:**
+
+1. **Search Messages**: Use `:Messages` then `/Error` to find errors quickly
+2. **Copy errors**: In Messages buffer, use `yy` to yank error lines for searching/reporting
+3. **Check load order**: `:Scriptnames` shows order - later scripts override earlier ones
+4. **Debug keymaps**: `:Verbose nmap` (no argument) shows ALL normal mode mappings with sources
+5. **Plugin debugging**: After `:Lazy sync`, use `:Messages` to see what happened
+
+**Useful command combinations:**
+
+```vim
+" See all settings and where they're from
+:Verbose set all
+
+" See all keymaps for a mode
+:Verbose nmap    " Normal mode
+:Verbose imap    " Insert mode
+:Verbose vmap    " Visual mode
+
+" See specific option
+:Verbose set number?
+:Verbose set colorscheme?
+
+" See all autocmds for event
+:Verbose autocmd BufRead
+:Verbose autocmd LspAttach
+```
+
+**When to use:**
+
+✅ **Use when:**
+- Config errors on startup
+- Keymap doesn't work as expected
+- Need to find where option is set
+- Plugin not loading
+- Debugging autocmds
+- Verifying plugin installation
+
+❌ **Don't use for:**
+- Go development (use LSP, gopls)
+- Code debugging (use debugger)
+- File searching (use fzf-lua, grep)
+
+**Configuration**: Lazy-loaded by commands (`cmd = { "Scriptnames", "Messages", "Verbose" }` in `lua/plugin_specs.lua`)
+
+**Note**: This plugin is for **config maintenance**, not Go coding. Keep it for when you need to debug or modify your Neovim setup.
+
+---
