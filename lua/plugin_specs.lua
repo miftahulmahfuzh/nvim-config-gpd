@@ -267,14 +267,6 @@ local plugin_specs = {
 
   { "nvim-zh/better-escape.vim", event = { "InsertEnter" } },
 
-  {
-    "Neur1n/neuims",
-    enabled = function()
-      return vim.g.is_win
-    end,
-    event = { "InsertEnter" },
-  },
-
   -- Git command inside vim
   {
     "tpope/vim-fugitive",
