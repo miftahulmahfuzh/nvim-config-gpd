@@ -155,13 +155,15 @@ Some plugins and features are conditionally enabled based on:
 
 ## Development Workflow
 
+**Primary Focus**: Most configuration changes will be made in `lua/plugin_specs.lua` - this is the central file for plugin management and should be the main focus for modifications.
+
 ### Testing Configuration Changes
 1. Edit configuration: `<leader>ev`
 2. Reload configuration: `<leader>sv`
 3. Check health: `:checkhealth`
 
 ### Adding New Plugins
-1. Add plugin spec to `lua/plugin_specs.lua`
+1. Add plugin spec to `lua/plugin_specs.lua` (main file for all plugin definitions)
 2. Create config file in `lua/config/<plugin-name>.lua` if needed
 3. Restart Nvim or run `:Lazy install`
 
