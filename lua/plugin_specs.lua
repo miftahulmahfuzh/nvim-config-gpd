@@ -259,9 +259,6 @@ local plugin_specs = {
     },
   },
 
-  -- Multiple cursor plugin like Sublime Text?
-  -- 'mg979/vim-visual-multi'
-
   -- Show undo history visually
   { "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } },
 
