@@ -307,3 +307,90 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {  󰁂 30
 - Custom fold text handler shows fold count
 
 ---
+
+## vista.vim
+
+**Purpose**: Tag/symbol viewer that displays an outline of your code in a sidebar window. Shows all functions, types, structs, methods, variables, and constants in the current file.
+
+**Requirements**: Requires `ctags` (universal-ctags) to be installed on the system. Also works with LSP (gopls).
+
+**Why useful for Go**:
+- Quick overview of all functions and types in current file
+- Jump to any function/struct/method by selecting it in sidebar
+- Navigate large Go files without scrolling
+- See code structure and organization at a glance
+- Understand file contents before diving into details
+- Alternative to code folding for navigation
+
+**Keymap**:
+- `<space>t` - **Toggle Vista window** (opens/closes the tags sidebar)
+
+**Commands**:
+- `:Vista` - Open Vista window
+- `:Vista!` - Close Vista window
+- `:Vista!!` - Toggle Vista window (same as `<space>t`)
+
+**What Vista displays for Go files**:
+- Package name
+- Functions (all top-level functions)
+- Methods (organized by receiver type)
+- Structs and their fields
+- Interfaces and their methods
+- Type definitions
+- Constants and variables
+
+**Example Vista sidebar for Go**:
+```
+▸ package main
+▾ Functions
+  ▸ main
+  ▸ HandleRequest
+  ▸ ProcessOrder
+  ▸ ValidateInput
+▾ Structs
+  ▸ User
+  ▸ Order
+  ▸ Config
+▾ Interfaces
+  ▸ Handler
+  ▸ Repository
+▾ Types
+  ▸ UserID
+  ▸ OrderStatus
+```
+
+**Navigation in Vista window**:
+- `j` / `k` - Move down/up in the tag list
+- `<Enter>` - Jump to the tag under cursor in main window
+- `p` - Preview tag in main window (without moving cursor)
+- `q` - Quit/close Vista window
+- `<space>t` - Toggle Vista window off
+
+**Example workflows**:
+
+*Explore unfamiliar Go file:*
+1. Open a Go file you haven't seen before
+2. Press `<space>t` to open Vista sidebar
+3. Review all functions and types at a glance
+4. Navigate with `j`/`k` to explore structure
+5. Press `<Enter>` on interesting functions to jump and read
+6. Press `<space>t` to close when done
+
+*Quick function lookup:*
+1. Working in a large Go file, need to find `ProcessPayment` function
+2. Press `<space>t` → Vista opens
+3. Scan the function list visually
+4. Press `<Enter>` on `ProcessPayment` → Jump directly to it
+5. Press `<space>t` to close Vista
+
+*Understand package structure:*
+1. Open main package file
+2. Press `<space>t` → See all exported functions and types
+3. Get overview of package API
+4. Use this to understand what the package provides
+
+**Configuration**: `viml_conf/plugins.vim` (lines 37-47)
+- `g:vista_echo_cursor = 0` - Don't echo messages on command line
+- `g:vista_stay_on_open = 0` - Focus moves to Vista window when opened
+
+---
