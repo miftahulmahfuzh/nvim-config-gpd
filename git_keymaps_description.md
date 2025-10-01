@@ -2,6 +2,17 @@
 
 This file contains detailed descriptions of Git-related plugin keymaps and usage patterns for quick reference.
 
+## Table of Contents
+
+1. [vim-fugitive](#vim-fugitive) - Comprehensive Git interface for Neovim
+2. [gitsigns.nvim](#gitsignsnvim) - Git change indicators in sign column
+3. [git-conflict.nvim](#git-conflictnvim) - Merge conflict resolution helper
+4. [gitlinker.nvim](#gitlinkernvim) - Generate GitHub/GitLab permalinks
+5. [vim-flog](#vim-flog) - Interactive git log viewer
+6. [diffview.nvim](#diffviewnvim) - Enhanced diff viewing
+7. [Summary Table](#summary-table) - Quick reference comparison
+8. [Typical Workflow](#typical-workflow) - Common git workflow steps
+
 ---
 
 ## vim-fugitive
