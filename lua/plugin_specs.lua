@@ -67,19 +67,6 @@ local plugin_specs = {
   },
   { "machakann/vim-swap", event = "VeryLazy" },
 
-  -- IDE for Lisp
-  -- 'kovisoft/slimv'
-  {
-    "vlime/vlime",
-    enabled = function()
-      return utils.executable("sbcl")
-    end,
-    config = function(plugin)
-      vim.opt.rtp:append(plugin.dir .. "/vim")
-    end,
-    ft = { "lisp" },
-  },
-
   -- Super fast buffer jump
   {
     "smoka7/hop.nvim",
