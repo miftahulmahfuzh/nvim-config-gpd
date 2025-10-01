@@ -262,15 +262,6 @@ local plugin_specs = {
   -- Show undo history visually
   { "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } },
 
-  -- Manage your yank history
-  {
-    "gbprod/yanky.nvim",
-    config = function()
-      require("config.yanky")
-    end,
-    cmd = "YankyRingHistory",
-  },
-
   -- Repeat vim motions
   { "tpope/vim-repeat", event = "VeryLazy" },
 
