@@ -317,9 +317,6 @@ local plugin_specs = {
     end,
   },
 
-  -- Vim tabular plugin for manipulate tabular, required by markdown plugins
-  { "godlygeek/tabular", ft = { "markdown" } },
-
   -- Markdown previewing (only for Mac and Windows)
   {
     "iamcco/markdown-preview.nvim",
