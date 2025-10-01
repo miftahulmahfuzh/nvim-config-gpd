@@ -624,3 +624,148 @@ fmt.Sprintf("%s", name│) // Continue typing
 - Works out of the box with sensible defaults
 
 ---
+
+## vim-mundo
+
+**Purpose**: Visual undo history browser that displays your edit history as a tree, allowing you to navigate through different versions of your file and recover any previous state.
+
+**Why useful for Go**:
+- Recover from accidental changes or deletions
+- See complete edit history with timestamps
+- Navigate to any previous version of your code
+- Experiment with changes knowing you can always go back to any state
+- Explore branching edits (when you undo and make new changes)
+- Better than simple undo/redo because you can see the entire history tree
+- Essential for code refactoring experimentation
+
+**Keymap**:
+- `<space>u` - **Toggle Mundo window** (opens/closes the undo tree viewer)
+
+**Commands**:
+- `:MundoToggle` - Toggle Mundo window (same as `<space>u`)
+- `:MundoShow` - Show Mundo window
+
+**Mundo window layout**:
+
+When you press `<space>u`, a sidebar opens with two sections:
+
+```
+┌─────────────────────────────────┐
+│ Undo Tree (top section)         │
+│   @  ← Current state (18:34)    │
+│   │                              │
+│   o  (18:30) +5/-2               │
+│   ├─o  (18:25) +3/-1  (branch)  │
+│   │                              │
+│   o  (18:20) +10/-0              │
+│   │                              │
+│   o  (18:15) +2/-5               │
+├─────────────────────────────────┤
+│ Diff Preview (bottom section)   │
+│ + func ProcessOrder() {          │
+│ -     // old code                │
+│ +     // new code                │
+└─────────────────────────────────┘
+```
+
+**Navigation in Mundo window**:
+- `j` / `k` - Move down/up through undo history
+- `<Enter>` - Revert file to selected state
+- `p` - Preview diff of selected state (without applying)
+- `q` - Close Mundo window
+- `<space>u` - Toggle Mundo window off
+
+**Understanding the tree**:
+- `@` - Current state marker
+- `o` - Previous states (undo nodes)
+- `│` - Linear history
+- `├─` - Branch point (when you undid and made different changes)
+- Time stamps show when each change was made
+- `+5/-2` means 5 lines added, 2 lines removed
+
+**Undo tree vs linear undo**:
+
+*Traditional linear undo/redo:*
+```
+edit1 → edit2 → edit3
+       ↑
+    (undo only goes back linearly)
+```
+
+*Mundo undo tree:*
+```
+edit1 → edit2 → edit3
+          ↓
+        edit2a → edit2b
+        ↑
+    (can explore both branches!)
+```
+
+**Example workflows**:
+
+*Recover from accidental deletion:*
+1. You delete a function in `handler.go`
+2. Make more edits, then realize you need that function back
+3. Press `<space>u` → Mundo opens
+4. Navigate up with `k` to state before deletion
+5. Press `p` to preview → Confirm it has your function
+6. Press `<Enter>` → Function is restored
+7. Press `<space>u` to close Mundo
+
+*Explore different approaches:*
+1. Write a Go function one way
+2. Undo it (`u` in normal mode)
+3. Write it differently (creates a branch in undo tree)
+4. Later, want to compare both versions
+5. Press `<space>u` → See both branches in tree
+6. Navigate between branches with `j`/`k`
+7. Press `p` to preview each version
+8. Press `<Enter>` on the version you want
+
+*Time travel through edits:*
+1. Working on `service.go` for an hour
+2. Want to see what the code looked like 30 minutes ago
+3. Press `<space>u` → See all edit states with timestamps
+4. Find the timestamp ~30 min ago
+5. Navigate to it and press `p` → Preview the old code
+6. Press `<Enter>` if you want to revert to that state
+
+*Rescue code from experimental branch:*
+1. You're refactoring and create multiple edit branches
+2. Main line: `edit1 → edit2 → edit3`
+3. Side branch: `edit2 → edit2a` (alternative approach)
+4. Continue on main line, but want code from side branch
+5. Press `<space>u` → Navigate to `edit2a` branch
+6. Press `p` → Preview that code
+7. Copy the parts you want, navigate back to current state
+
+**Common scenarios**:
+
+*Before/after comparison:*
+1. Make significant changes to a Go struct
+2. Want to see what it looked like before
+3. Press `<space>u` → Navigate to previous state
+4. Press `p` → Preview shows diff of all changes
+5. Review changes, press `q` to close
+
+*Undo mistake without losing recent work:*
+1. Made 5 edits, but edit #3 was wrong
+2. Press `<space>u` → See all 5 edits in tree
+3. Navigate to edit #2 (before the mistake)
+4. Press `<Enter>` → Reverts to that state
+5. Edit #3, #4, #5 are still in tree as a branch
+6. Make correct edit #3
+7. Can still access old #4 and #5 from tree if needed
+
+**Visual indicators**:
+- `@` marks your current position in the tree
+- Timestamps help identify when changes were made
+- `+X/-Y` shows lines added/removed in each change
+- Branches show where you undid and took different paths
+- Preview pane shows actual diff (what changed)
+
+**Configuration**: `viml_conf/plugins.vim` (lines 49-53)
+- Undo tree window width: 80 characters
+- Verbose graph disabled for cleaner view
+
+---
