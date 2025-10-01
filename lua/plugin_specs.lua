@@ -108,12 +108,6 @@ local plugin_specs = {
   { "catppuccin/nvim", name = "catppuccin", lazy = true },
   { "olimorris/onedarkpro.nvim", lazy = true },
   { "marko-cerovac/material.nvim", lazy = true },
-  {
-    "rockyzhang24/arctic.nvim",
-    dependencies = { "rktjmp/lush.nvim" },
-    name = "arctic",
-    branch = "v2",
-  },
   { "rebelot/kanagawa.nvim", lazy = true },
   { "miikanissi/modus-themes.nvim", priority = 1000 },
   { "wtfox/jellybeans.nvim", priority = 1000 },

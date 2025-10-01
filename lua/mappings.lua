@@ -246,3 +246,8 @@ keymap.set("n", "<Esc>", function()
 end, {
   desc = "close floating win",
 })
+
+-- Colorscheme picker
+vim.keymap.set("n", "<leader>cc", function()
+	require("colorscheme_picker").open()
+end, { desc = "Choose a colorscheme" })
