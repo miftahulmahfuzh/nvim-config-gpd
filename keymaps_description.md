@@ -5,19 +5,15 @@ This file contains detailed descriptions of plugin keymaps and usage patterns fo
 ## Table of Contents
 
 1. [glance.nvim](#glancenvim) - LSP definitions, references, implementations viewer
-2. [nvim-hlslens](#nvim-hlslens) - Search match counter and navigator
-3. [nvim-cmp](#nvim-cmp) - Autocompletion engine
-4. [lualine.nvim](#lualinenvim) - Statusline with file/git/LSP info
-5. [bufferline.nvim](#bufferlinenvim) - Buffer tabs at top of screen
-6. [nvim-ufo](#nvim-ufo) - Advanced code folding
-7. [vista.vim](#vistavim) - Tag/symbol viewer sidebar
-8. [UltiSnips](#ultisnips) - Snippet engine
-9. [vim-mundo](#vim-mundo) - Visual undo history tree
-10. [vim-repeat](#vim-repeat) - Repeat plugin operations with `.`
-11. [targets.vim](#targetsvim) - Extended text objects (separators, arguments, seeking)
-12. [vim-sandwich](#vim-sandwich) - Add/delete/replace surrounding pairs
-13. [vim-matchup](#vim-matchup) - Enhanced `%` navigation for matching pairs
-14. [vim-scriptease](#vim-scriptease) - Config debugging tools
+2. [nvim-ufo](#nvim-ufo) - Advanced code folding
+3. [vista.vim](#vistavim) - Tag/symbol viewer sidebar
+4. [UltiSnips](#ultisnips) - Snippet engine
+5. [vim-mundo](#vim-mundo) - Visual undo history tree
+6. [vim-repeat](#vim-repeat) - Repeat plugin operations with `.`
+7. [targets.vim](#targetsvim) - Extended text objects (separators, arguments, seeking)
+8. [vim-sandwich](#vim-sandwich) - Add/delete/replace surrounding pairs
+9. [vim-matchup](#vim-matchup) - Enhanced `%` navigation for matching pairs
+10. [vim-scriptease](#vim-scriptease) - Config debugging tools
 
 ---
 
