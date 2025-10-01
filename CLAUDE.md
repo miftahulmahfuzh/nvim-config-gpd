@@ -15,6 +15,7 @@ The configuration follows a modular structure:
 ### Entry Points
 - `init.lua` - Main configuration entry point for terminal Nvim
 - `ginit.vim` - Additional configuration for GUI clients
+- `keymaps_description.md` - Detailed plugin keymaps and usage descriptions (add plugin documentation here)
 
 ### Directory Organization
 - `lua/` - Lua configuration modules (35+ files)
@@ -174,6 +175,9 @@ Some plugins and features are conditionally enabled based on:
 
 ### Custom Snippets
 Add snippets to `my_snippets/` directory. The configuration automatically includes this directory via UltiSnips settings.
+
+### Documenting Plugin Usage
+When asked to describe plugin usage or keymaps, add the documentation to `keymaps_description.md` for easy reference.
 
 ## Dependencies
 
