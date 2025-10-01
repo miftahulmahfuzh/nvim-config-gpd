@@ -317,8 +317,6 @@ local plugin_specs = {
     end,
   },
 
-  { "chrisbra/unicode.vim", keys = { "ga" }, cmd = { "UnicodeSearch" } },
-
   -- Additional powerful text object for vim, this plugin should be studied
   -- carefully to use its full power
   { "wellle/targets.vim", event = "VeryLazy" },
