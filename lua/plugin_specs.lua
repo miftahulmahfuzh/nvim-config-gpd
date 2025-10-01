@@ -271,9 +271,6 @@ local plugin_specs = {
     cmd = "YankyRingHistory",
   },
 
-  -- Handy unix command inside Vim (Rename, Move etc.)
-  { "tpope/vim-eunuch", cmd = { "Rename", "Delete" } },
-
   -- Repeat vim motions
   { "tpope/vim-repeat", event = "VeryLazy" },
 
