@@ -646,3 +646,110 @@ edit1 → edit2 → edit3
 - Verbose graph disabled for cleaner view
 
 ---
+
+## vim-repeat
+
+**Purpose**: Support plugin that enhances Vim's `.` (dot) command to work with plugin mappings, making plugin operations repeatable.
+
+**Why useful for Go**:
+- Makes plugin commands repeatable with `.` (dot)
+- Speeds up repetitive editing tasks
+- Works silently in the background
+- Essential for efficient workflow with commenting, surrounding, and other plugin operations
+- Reduces keystrokes for repetitive refactoring
+
+**No keymaps needed**: This plugin works **automatically**. Just use the normal `.` (dot) command!
+
+**The `.` (dot) command**:
+
+In normal mode, `.` repeats your last change:
+- `dd` (delete line) → press `.` → deletes another line
+- `ciw` (change word) → press `.` → changes another word
+- `x` (delete char) → press `.` → deletes another char
+
+**What vim-repeat adds**:
+
+**Without vim-repeat:**
+- `.` only repeats native Vim commands
+- Plugin mappings can't be repeated ❌
+
+**With vim-repeat:**
+- `.` now works with plugin operations too! ✅
+- Any plugin that supports vim-repeat becomes repeatable
+
+**Plugins that benefit** (in your config):
+
+1. **vim-commentary** (commenting):
+   - `gcc` to comment a line
+   - Move to another line, press `.` → Comments it
+   - Keep pressing `.` to comment multiple lines quickly
+
+2. **vim-sandwich** (surround text):
+   - `saiw"` to surround word with quotes
+   - Move to another word, press `.` → Surrounds it with quotes
+   - Works with any surround operation
+
+**Example workflows**:
+
+*Comment multiple lines:*
+```go
+func ProcessOrder() {      // Press gcc → commented
+    validateInput()        // Move here, press . → commented
+    processPayment()       // Move here, press . → commented
+    sendConfirmation()     // Move here, press . → commented
+}
+```
+
+*Surround multiple function calls with parentheses:*
+```go
+order.Status            // Press saiw) → (order.Status)
+user.Email              // Move here, press . → (user.Email)
+product.Price           // Move here, press . → (product.Price)
+```
+
+*Delete multiple lines:*
+```go
+// Old approach without repeat:
+dd  // delete line
+dd  // type again
+dd  // type again
+
+// With repeat:
+dd  // delete line
+.   // repeat (delete another line)
+.   // repeat (delete another line)
+```
+
+**Common scenarios**:
+
+*Refactoring - add error checks:*
+1. Add error check after first function call: `o` then type `if err != nil { return err }`
+2. Move to next function call that needs error check
+3. Press `.` → Inserts same error check
+4. Repeat for all function calls
+
+*Clean up imports:*
+1. Delete unused import line: `dd`
+2. Move to next unused import
+3. Press `.` → Deletes it
+4. Continue with `.` for all unused imports
+
+*Change variable names:*
+1. Change first occurrence: `ciwNewName<Esc>`
+2. Move to next occurrence (use `*` to find)
+3. Press `.` → Changes to NewName
+4. Repeat with `n` and `.` for all occurrences
+
+**Visual feedback**:
+- No visual changes - works transparently
+- You just notice that `.` now works with more commands
+- Increases editing efficiency without learning new keymaps
+
+**Technical note**:
+- Plugins must explicitly support vim-repeat
+- Both vim-commentary and vim-sandwich support it
+- vim-repeat provides the API for plugins to hook into `.` command
+
+**Configuration**: None needed - works automatically once loaded (`event = "VeryLazy"` in `lua/plugin_specs.lua`)
+
+---
