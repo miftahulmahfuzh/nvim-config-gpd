@@ -53,3 +53,57 @@ This file contains detailed descriptions of plugin keymaps and usage patterns fo
 **Configuration**: `lua/config/hlslens.lua`
 
 ---
+
+## nvim-cmp
+
+**Purpose**: Autocompletion engine that shows intelligent suggestions as you type. Essential for productive coding.
+
+**Why essential for Go**:
+- Auto-completes Go function names, types, and variables from gopls LSP
+- Shows function signatures and documentation in popup
+- Suggests struct fields as you type `structName.`
+- Path completion for import statements
+- Snippets for common Go patterns (if, for, func, struct, etc.)
+- Buffer word completion for variable names
+
+**Completion Sources** (in priority order):
+1. **LSP** (`nvim_lsp`) - Language server completions (gopls for Go)
+2. **UltiSnips** - Code snippets
+3. **Path** - File path completion
+4. **Buffer** - Words from current buffer (min 2 characters)
+
+**Keymaps** (Insert mode, when completion menu is visible):
+- `<Tab>` - Select next completion item
+- `<Shift-Tab>` - Select previous completion item
+- `<Enter>` - Accept/confirm selected completion
+- `<Ctrl-e>` - Abort/cancel completion
+- `<Esc>` - Close completion menu
+- `<Ctrl-d>` - Scroll documentation up (in popup)
+- `<Ctrl-f>` - Scroll documentation down (in popup)
+
+**Example workflows**:
+
+*Go function completion:*
+1. Type `fmt.Prin` → popup shows `Printf`, `Println`, `Print`
+2. Press `<Tab>` to select `Printf`
+3. Press `<Enter>` to accept
+4. View function signature in documentation window
+
+*Struct field completion:*
+1. Have a struct: `user := User{}`
+2. Type `user.` → popup shows all fields: `Name`, `Email`, `ID`, etc.
+3. Navigate with `<Tab>`, accept with `<Enter>`
+
+*Import path completion:*
+1. Type `import "github.com/` → path suggestions appear
+2. Navigate and accept to complete the import path
+
+**Special behavior**:
+- Completion menu appears automatically after typing
+- Shows icons indicating completion type (function, variable, field, etc.)
+- For LaTeX files (`.tex`), uses omni completion instead of LSP
+- Command-line completion enabled for `/` search and `:` commands
+
+**Configuration**: `lua/config/nvim-cmp.lua`
+
+---
