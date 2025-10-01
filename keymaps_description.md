@@ -200,3 +200,110 @@ This file contains detailed descriptions of plugin keymaps and usage patterns fo
 **Configuration**: `lua/config/bufferline.lua`
 
 ---
+
+## nvim-ufo
+
+**Purpose**: Advanced code folding plugin that allows you to collapse/expand code blocks (functions, structs, if statements, etc.) for better navigation through large files.
+
+**Why useful for Go**:
+- Collapse long functions to see only function signatures
+- Fold struct definitions to see just the struct name and type
+- Fold import blocks, if/else blocks, for loops
+- Navigate large Go files by viewing just the high-level structure
+- Preview folded content without opening it
+- Essential for understanding large codebases with many functions
+
+**Keymaps**:
+- `zR` - **Open all folds** in the current buffer
+- `zM` - **Close all folds** in the current buffer
+- `zr` - **Open folds except certain kinds** (progressive opening)
+- `<leader>K` - **Preview folded content** in floating window (without opening the fold)
+
+**Standard Vim fold commands** (also work):
+- `za` - Toggle fold under cursor (open if closed, close if open)
+- `zo` - Open fold under cursor
+- `zc` - Close fold under cursor
+- `zO` - Open all folds recursively under cursor
+- `zC` - Close all folds recursively under cursor
+
+**Visual indicators**:
+- Fold column shows `-` for folded lines and `|` for open folds
+- Folded lines show: `󰁂 25` (indicates 25 lines are folded)
+- Preview shows folded content in floating window
+
+**Example workflow in Go**:
+
+*Before folding (large file):*
+```go
+package main
+
+import (
+    "fmt"
+    "net/http"
+    "time"
+)
+
+func ProcessOrder(order *Order) error {
+    if order == nil {
+        return errors.New("order is nil")
+    }
+    // ... 50 more lines ...
+    return nil
+}
+
+type User struct {
+    ID        int
+    Name      string
+    Email     string
+    // ... 20 more fields ...
+}
+
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
+    // ... 30 lines of implementation ...
+}
+```
+
+*After pressing `zM` (fold all):*
+```go
+package main
+
+import (  󰁂 5
+}
+
+func ProcessOrder(order *Order) error {  󰁂 50
+}
+
+type User struct {  󰁂 20
+}
+
+func HandleRequest(w http.ResponseWriter, r *http.Request) {  󰁂 30
+}
+```
+
+**Example workflows**:
+
+*Navigate large file:*
+1. Open a large Go file (e.g., `handlers.go` with 500+ lines)
+2. Press `zM` to fold everything → See all function signatures at once
+3. Scroll through to find the function you need
+4. Place cursor on the function and press `<leader>K` to preview
+5. Press `zo` to open that specific fold to edit
+6. Press `zc` to close it when done
+
+*Review struct definition:*
+1. Place cursor on a folded struct
+2. Press `<leader>K` to peek at all fields in a popup
+3. Decide if you need to open it or continue browsing
+
+*Progressive code exploration:*
+1. Start with `zM` (all folded)
+2. Press `zr` multiple times to progressively open outer folds
+3. Navigate to interesting sections
+4. Use `zo` to open specific inner folds
+
+**Configuration**: `lua/config/nvim_ufo.lua`
+- Fold level set to 99 (all folds open by default)
+- Fold column width: 1 character
+- Custom fold text handler shows fold count
+
+---
