@@ -268,14 +268,6 @@ local plugin_specs = {
   { "nvim-zh/better-escape.vim", event = { "InsertEnter" } },
 
   {
-    "lyokha/vim-xkbswitch",
-    enabled = function()
-      return vim.g.is_mac and utils.executable("xkbswitch")
-    end,
-    event = { "InsertEnter" },
-  },
-
-  {
     "Neur1n/neuims",
     enabled = function()
       return vim.g.is_win
