@@ -394,3 +394,110 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {  󰁂 30
 - `g:vista_stay_on_open = 0` - Focus moves to Vista window when opened
 
 ---
+
+## UltiSnips
+
+**Purpose**: Snippet engine that lets you insert code templates (snippets) quickly by typing abbreviations and expanding them into full code structures.
+
+**Dependencies**: Includes `vim-snippets` package with pre-built snippets for many languages including Go.
+
+**Why useful for Go**:
+- Quickly insert common Go patterns (if/else, for loops, functions, structs, interfaces)
+- Fill in placeholders for function names, parameters, types
+- Saves typing repetitive code structures
+- Reduces syntax errors with template-based code insertion
+- Speeds up boilerplate code writing
+
+**Keymaps** (Insert mode):
+- `<Ctrl-j>` - **Expand snippet** (when on trigger word) OR **jump to next placeholder**
+- `<Ctrl-k>` - **Jump to previous placeholder**
+
+**How it works**:
+1. Type a snippet trigger word (e.g., `for`, `if`, `func`)
+2. Press `<Ctrl-j>` to expand it into full code template
+3. Type to fill in the current placeholder
+4. Press `<Ctrl-j>` to jump to next placeholder
+5. Repeat until all placeholders filled
+
+**Common Go snippets** (from vim-snippets):
+- `func` - Function definition
+- `main` - Main function
+- `if` - If statement
+- `ife` - If-else statement
+- `for` - For loop
+- `forr` - For-range loop
+- `st` - Struct definition
+- `int` - Interface definition
+- `switch` - Switch statement
+- `case` - Case statement
+- `err` - Error handling pattern (`if err != nil`)
+- `errn` - Error return pattern
+- `json` - JSON struct tags
+- `make` - Make slice/map/channel
+
+**Example workflows**:
+
+*Insert a for loop:*
+1. In insert mode, type `for`
+2. Press `<Ctrl-j>` → Expands to:
+   ```go
+   for i := 0; i < count; i++ {
+
+   }
+   ```
+3. Type variable name to replace `i`
+4. Press `<Ctrl-j>` → Jump to start value (replace `0`)
+5. Press `<Ctrl-j>` → Jump to condition (replace `count`)
+6. Press `<Ctrl-j>` → Jump to loop body
+7. Type your code
+
+*Insert a function with error handling:*
+1. Type `func`
+2. Press `<Ctrl-j>` → Expands to function template
+3. Fill in: function name → parameters → return type
+4. Press `<Ctrl-j>` between each placeholder
+
+*Insert error check:*
+1. Type `err`
+2. Press `<Ctrl-j>` → Expands to:
+   ```go
+   if err != nil {
+       return err
+   }
+   ```
+
+*Insert a struct with JSON tags:*
+1. Type `st`
+2. Press `<Ctrl-j>` → Get struct template
+3. Fill in struct name
+4. Add fields, use `json` snippet for tags
+
+**Integration with nvim-cmp**:
+- Snippets appear in completion menu automatically
+- Select snippet with `<Tab>` and accept with `<Enter>`
+- Or type trigger word and press `<Ctrl-j>` to expand directly
+- Snippet source shown in completion menu
+
+**Custom snippets**:
+Add your own Go snippets in `~/.config/nvim/my_snippets/go.snippets`
+
+Example custom snippet format:
+```snippets
+snippet hf "HTTP handler function" b
+func ${1:HandlerName}(w http.ResponseWriter, r *http.Request) {
+    ${0}
+}
+endsnippet
+```
+
+**Snippet directories**:
+- Built-in: `vim-snippets` package (includes Go snippets)
+- Custom: `~/.config/nvim/my_snippets/` (create `go.snippets` for Go)
+
+**Configuration**: `viml_conf/plugins.vim` (lines 19-32)
+- Expand trigger: `<Ctrl-j>`
+- Jump forward: `<Ctrl-j>`
+- Jump backward: `<Ctrl-k>`
+- Custom snippet directories: `['UltiSnips', 'my_snippets']`
+
+---
