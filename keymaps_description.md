@@ -27,180 +27,6 @@ This file contains detailed descriptions of plugin keymaps and usage patterns fo
 
 ---
 
-## nvim-hlslens
-
-**Purpose**: Enhances the search experience by showing match count and index (e.g., `[2/5]` means you're on match 2 out of 5 total matches).
-
-**Why useful for Go**:
-- Quickly see how many times a variable/function appears in a file
-- Navigate between all occurrences easily
-- When refactoring, see at a glance if you've updated all instances
-- Essential for code review and understanding variable scope
-
-**Keymaps**:
-- `*` - Search forward for word under cursor (stays at current position, shows total count)
-- `#` - Search backward for word under cursor (stays at current position, shows total count)
-- `n` - Jump to next match (shows which match you're on: e.g., `[3/8]`)
-- `N` - Jump to previous match (shows which match you're on)
-
-**Example workflow**:
-1. Place cursor on a variable name (e.g., `userID`)
-2. Press `*` to search for all occurrences → Shows `[1/8]` (8 total matches)
-3. Press `n` to jump to next occurrence → Shows `[2/8]`
-4. Continue with `n`/`N` to navigate through all matches
-5. Use for refactoring: verify you've updated all instances of a variable
-
-**Configuration**: `lua/config/hlslens.lua`
-
----
-
-## nvim-cmp
-
-**Purpose**: Autocompletion engine that shows intelligent suggestions as you type. Essential for productive coding.
-
-**Why essential for Go**:
-- Auto-completes Go function names, types, and variables from gopls LSP
-- Shows function signatures and documentation in popup
-- Suggests struct fields as you type `structName.`
-- Path completion for import statements
-- Snippets for common Go patterns (if, for, func, struct, etc.)
-- Buffer word completion for variable names
-
-**Completion Sources** (in priority order):
-1. **LSP** (`nvim_lsp`) - Language server completions (gopls for Go)
-2. **UltiSnips** - Code snippets
-3. **Path** - File path completion
-4. **Buffer** - Words from current buffer (min 2 characters)
-
-**Keymaps** (Insert mode, when completion menu is visible):
-- `<Tab>` - Select next completion item
-- `<Shift-Tab>` - Select previous completion item
-- `<Enter>` - Accept/confirm selected completion
-- `<Ctrl-e>` - Abort/cancel completion
-- `<Esc>` - Close completion menu
-- `<Ctrl-d>` - Scroll documentation up (in popup)
-- `<Ctrl-f>` - Scroll documentation down (in popup)
-
-**Example workflows**:
-
-*Go function completion:*
-1. Type `fmt.Prin` → popup shows `Printf`, `Println`, `Print`
-2. Press `<Tab>` to select `Printf`
-3. Press `<Enter>` to accept
-4. View function signature in documentation window
-
-*Struct field completion:*
-1. Have a struct: `user := User{}`
-2. Type `user.` → popup shows all fields: `Name`, `Email`, `ID`, etc.
-3. Navigate with `<Tab>`, accept with `<Enter>`
-
-*Import path completion:*
-1. Type `import "github.com/` → path suggestions appear
-2. Navigate and accept to complete the import path
-
-**Special behavior**:
-- Completion menu appears automatically after typing
-- Shows icons indicating completion type (function, variable, field, etc.)
-- For LaTeX files (`.tex`), uses omni completion instead of LSP
-- Command-line completion enabled for `/` search and `:` commands
-
-**Configuration**: `lua/config/nvim-cmp.lua`
-
----
-
-## lualine.nvim
-
-**Purpose**: Statusline (bottom bar) that displays comprehensive information about your current file and editor state.
-
-**Location**: Bottom of the Neovim window
-
-**Why useful for Go**:
-- Shows active LSP server (📡 gopls) to confirm language server is running
-- Displays diagnostics (errors, warnings) from gopls in real-time
-- Git integration shows branch, ahead/behind status, and file changes
-- Trailing whitespace and mixed indent warnings (important for Go formatting)
-- File encoding and format status
-
-**Information Displayed** (left to right):
-- **Section A**: Filename (with 🔒 for read-only files)
-- **Section B**:
-  - Git branch name (truncated to 20 characters)
-  - Ahead/behind remote: `↑[2]` (2 commits ahead), `↓[3]` (3 commits behind)
-  - Git diff: added/modified/removed lines
-  - Python virtual env indicator (when editing .py files)
-- **Section C**:
-  - Macro recording status
-  - Spell check status [SPELL]
-- **Section X**:
-  - Active LSP server (📡 gopls, 📡 lua_ls, etc. or 🚫 if none)
-  - Diagnostics: 🆇 errors, ⚠️ warnings, ℹ️ info,  hints
-  - Trailing whitespace warning: `[5]trailing` (found on line 5)
-  - Mixed indent warning: `MI:12` (mixed indent on line 12)
-- **Section Y**:
-  - File encoding (UTF-8)
-  - File format (unix/win/mac)
-  - File type (go, lua, markdown, etc.)
-  - IME state [CN] (Chinese input method)
-- **Section Z**:
-  - Cursor location (line:column)
-  - File progress percentage
-
-**No keymaps**: Automatically displays information, no user interaction needed.
-
-**Configuration**: `lua/config/lualine.lua`
-
----
-
-## bufferline.nvim
-
-**Purpose**: Shows open buffers as tabs at the top of the screen (like browser tabs), making it easy to see and switch between multiple files.
-
-**Location**: Top of the Neovim window
-
-**Why useful for Go**:
-- Quickly see all open Go files at a glance
-- Visual indication of unsaved changes (● indicator)
-- Easy buffer switching without remembering buffer numbers
-- Essential when working with multiple files (main.go, handler.go, types.go, etc.)
-
-**Visual Elements**:
-- Each open buffer shown as a tab
-- `●` indicator for modified/unsaved files
-- `` close icon on each buffer
-- Current buffer highlighted
-- Filters out special buffers (quickfix, fugitive, git)
-
-**Keymaps**:
-- `<space>bp` - **Buffer Pick**: Interactive buffer selection (shows letters on each tab, press letter to jump)
-- Left mouse click - Switch to buffer
-- Click close icon - Close buffer
-
-**Alternative navigation** (from mappings.lua):
-- `gb` - Go to next buffer (or buffer number if count provided)
-- `gB` - Go to previous buffer
-- `\d` - Delete current buffer (keep window open)
-
-**Example workflows**:
-
-*Quick buffer switching:*
-1. Press `<space>bp`
-2. Each buffer tab shows a letter (a, b, c, etc.)
-3. Press the letter to jump to that buffer
-
-*Working with multiple Go files:*
-```
-┌──────────────────────────────────────────────────┐
-│ [main.go●] [handler.go] [types.go] [utils.go]  │
-└──────────────────────────────────────────────────┘
-```
-- `●` on main.go shows unsaved changes
-- Click any tab to switch files
-- Use `<space>bp` for keyboard navigation
-
-**Configuration**: `lua/config/bufferline.lua`
-
----
-
 ## nvim-ufo
 
 **Purpose**: Advanced code folding plugin that allows you to collapse/expand code blocks (functions, structs, if statements, etc.) for better navigation through large files.
@@ -969,5 +795,315 @@ return fmt.Errorf("validation error: field: %s: value too short", field)
 - Works with vim-commentary: Comment text objects found with seeking
 
 **Configuration**: None needed - works out of the box (`event = "VeryLazy"` in `lua/plugin_specs.lua`)
+
+---
+
+## vim-sandwich
+
+**Purpose**: Add, delete, or replace surrounding pairs (quotes, brackets, parentheses, tags) around text. Essential for manipulating delimiters quickly.
+
+**Why useful for Go**:
+- Quickly add quotes around strings or identifiers
+- Change quote styles (double to single, to backticks)
+- Wrap expressions in parentheses for precedence
+- Add/remove brackets around slice/array literals
+- Surround code blocks with braces
+- Works seamlessly with targets.vim for powerful text manipulation
+- Integrates with vim-repeat for efficient repetitive operations
+
+**Core operations**:
+- `sa{motion}{char}` - **Add** surrounding (sandwich add)
+- `sd{char}` - **Delete** surrounding (sandwich delete)
+- `sr{old}{new}` - **Replace** surrounding (sandwich replace)
+
+**Keymaps**:
+
+**Add surrounding (`sa`):**
+
+Syntax: `sa{motion}{char}`
+- `sa` = sandwich add command
+- `{motion}` = Vim motion (what to surround)
+- `{char}` = Character to surround with
+
+Common motions:
+- `iw` - inner word
+- `aw` - a word (includes whitespace)
+- `i"` - inside quotes
+- `$` - to end of line
+- `ip` - inner paragraph
+- `a)` - around parentheses
+
+Common characters:
+- `"` - double quotes
+- `'` - single quotes
+- `` ` `` - backticks
+- `(` or `)` - parentheses (with/without spaces)
+- `[` or `]` - square brackets
+- `{` or `}` - curly braces
+- `<` or `>` - angle brackets
+- `t` - HTML/XML tags
+
+**Delete surrounding (`sd`):**
+
+Syntax: `sd{char}`
+- Cursor must be inside or on the surrounding pair
+- Automatically finds and removes both delimiters
+
+**Replace surrounding (`sr`):**
+
+Syntax: `sr{old}{new}`
+- Replace one type of surrounding with another
+- Cursor must be inside the surrounding pair
+
+**Go-specific examples:**
+
+**1. Add quotes to identifiers:**
+```go
+// Add double quotes
+userID
+// saiw" → "userID"
+
+// Add backticks (for raw strings)
+C:\Users\path
+// saiw` → `C:\Users\path`
+
+// Add single quotes (for runes)
+a
+// saiw' → 'a'
+```
+
+**2. Wrap expressions in parentheses:**
+```go
+// Simple expression
+order.Total > 100
+// sa$) → (order.Total > 100)
+
+// With spaces
+order.Total
+// saiw( → ( order.Total )
+
+// Without spaces
+order.Total
+// saiw) → (order.Total)
+
+// Multiple words
+user != nil && user.Active
+// Visual select, then sa) → (user != nil && user.Active)
+```
+
+**3. Add brackets for slices:**
+```go
+// Convert args to slice literal
+"apple", "banana", "cherry"
+// Visual select all, sa] → ["apple", "banana", "cherry"]
+
+// Add outer array type
+string{"test"}
+// sa$] before the string → []string{"test"}
+```
+
+**4. Change string quote styles:**
+```go
+// Double quotes to backticks (for raw strings)
+path := "C:\Users\name"
+// Cursor in string, sr"` → path := `C:\Users\name`
+
+// Backticks to double quotes
+msg := `hello world`
+// sr`" → msg := "hello world"
+
+// Double to single (for rune)
+char := "a"
+// sr"' → char := 'a'
+```
+
+**5. Delete surrounding pairs:**
+```go
+// Remove quotes
+name := "John"
+// Cursor in string, sd" → name := John
+
+// Remove parentheses
+result := (x + y)
+// Cursor inside, sd( → result := x + y
+
+// Remove brackets
+items := [3]int{1, 2, 3}
+// Cursor on/in brackets, sd[ → items := 3]int{1, 2, 3}
+// (may need manual fixing)
+
+// Remove struct braces
+User{Name: "John"}
+// sd{ → Name: "John"
+```
+
+**6. Wrap return values:**
+```go
+// Add parentheses to return
+return err
+// sa$) → return (err)
+
+// Wrap multiple values
+return nil, err
+// sa$) → return (nil, err)
+```
+
+**7. Add braces around statements:**
+```go
+// Convert single-line if to block
+if err != nil return err
+// Position cursor, sa${ → if err != nil {return err}
+// (then format manually)
+
+// Wrap code block
+validateInput()
+processOrder()
+// Visual select both lines, sa{ →
+// {
+//     validateInput()
+//     processOrder()
+// }
+```
+
+**8. Function call wrapping:**
+```go
+// Wrap variable in function
+userID
+// saiw)fmt.Println → fmt.Println(userID)
+// (requires typing function name)
+
+// Add parentheses to expression
+user.ID
+// sa$) → (user.ID)
+```
+
+**Common workflows:**
+
+*Quick variable quoting:*
+```go
+// Original
+log.Println(userID)
+// Cursor on userID, saiw" → log.Println("userID")
+```
+
+*Change error format:*
+```go
+// From formatted to raw string
+err := fmt.Errorf("path: %s\n", path)
+// sr"` → err := fmt.Errorf(`path: %s\n`, path)
+```
+
+*Wrap condition for grouping:*
+```go
+// Add precedence with parentheses
+if a && b || c
+// Visual select "a && b", sa) → if (a && b) || c
+```
+
+*Remove unnecessary wrapping:*
+```go
+// Clean up over-parenthesized code
+return (user.IsValid())
+// sd( → return user.IsValid()
+```
+
+*Batch surround with vim-repeat:*
+```go
+// Surround multiple variables with quotes
+userID
+orderID
+productID
+// On first: saiw"
+// On second: . (repeat)
+// On third: . (repeat)
+// Result: "userID", "orderID", "productID"
+```
+
+**Visual mode:**
+
+Select text first, then use `sa{char}` to surround:
+
+```go
+// Multi-line selection
+func ProcessOrder() {
+    validateInput()
+    checkInventory()
+}
+// Visual select function body, sa{ to add outer braces
+// (useful for wrapping in control structures)
+
+// Inline selection
+name email age
+// Visual select, sa" → "name email age"
+```
+
+**Integration with targets.vim:**
+
+Combine targets seeking with sandwich:
+
+```go
+// Select next string and change quotes
+log.Printf("user: %s", "error: not found")
+// Type: cin"sr"`
+// Result: selects "error: not found", changes to backticks
+// → log.Printf("user: %s", `error: not found`)
+
+// Surround next parentheses content
+result := calculate(x + y)
+// Type: vina)sa[ → select "(x + y)" content and add brackets
+// → result := calculate([x + y])
+```
+
+**Integration with vim-repeat:**
+
+Repeat sandwich operations with `.`:
+
+```go
+// Add quotes to multiple identifiers
+userID    // saiw"
+orderID   // move here, press . → "orderID"
+itemID    // move here, press . → "itemID"
+
+// Remove quotes from multiple strings
+"apple"   // sd"
+"banana"  // move here, press . → banana
+"cherry"  // move here, press . → cherry
+```
+
+**Tips:**
+
+1. **Spacing in parentheses:**
+   - `sa{motion}(` adds spaces: `( text )`
+   - `sa{motion})` no spaces: `(text)`
+
+2. **Visual selection:**
+   - Select text first, then `sa{char}` to surround
+
+3. **Cursor position:**
+   - For `sd` and `sr`, cursor can be anywhere inside/on the pair
+
+4. **Motion combinations:**
+   - `sa$"` - surround from cursor to end of line with quotes
+   - `saiw(` - surround inner word with parentheses (with spaces)
+   - `saip}` - surround paragraph with braces
+
+5. **Undo:**
+   - `u` undoes the sandwich operation like any edit
+
+**Common operations table:**
+
+| Operation | Command | Example Input | Result |
+|-----------|---------|---------------|--------|
+| Quote word | `saiw"` | `hello` | `"hello"` |
+| Wrap in parens | `saiw)` | `value` | `(value)` |
+| Change quotes | `sr"'` | `"text"` | `'text'` |
+| Remove parens | `sd(` | `(value)` | `value` |
+| Quote to backtick | `sr"`  | `"path"` | `` `path` `` |
+| Surround to EOL | `sa$)` | `x + y` | `(x + y)` |
+| Add brackets | `sa$]` | `1, 2, 3` | `[1, 2, 3]` |
+
+**Configuration**: None needed - works automatically (`event = "VeryLazy"` in `lua/plugin_specs.lua`)
+
+**Plugin support**: Integrates with vim-repeat for `.` repetition
 
 ---
