@@ -753,3 +753,221 @@ dd  // delete line
 **Configuration**: None needed - works automatically once loaded (`event = "VeryLazy"` in `lua/plugin_specs.lua`)
 
 ---
+
+## targets.vim
+
+**Purpose**: Extends Vim's text objects with additional powerful selections, particularly for separators, arguments, and seeking operations.
+
+**Why useful for Go**:
+- Edit function arguments without precise cursor positioning
+- Work with separator-delimited content (commas, colons, pipes)
+- Seek forward/backward to next text object automatically
+- Essential for fast editing of function calls, struct literals, and complex expressions
+- Reduces cursor movement for common editing tasks
+
+**No dedicated keymaps**: Extends existing text object syntax!
+
+**Core concepts**:
+
+1. **Text objects**: `i` (inside) and `a` (around)
+2. **Modifiers**: `n` (next), `l` (last), `N` (count)
+3. **Separators**: `,` `.` `;` `:` `+` `-` `=` `~` `_` `*` `#` `/` `|` `\` `&` `$`
+
+**Text object syntax**:
+
+Standard Vim: `ci(` - change inside parentheses (cursor must be inside)
+Targets: `cin(` - change inside **next** parentheses (works from anywhere)
+
+**Key features**:
+
+**1. Separator text objects:**
+
+Works with any delimiter character to select content between separators.
+
+Syntax: `ci<separator>` or `ca<separator>`
+
+Go examples:
+```go
+// Function arguments (separated by commas)
+processOrder(userID, orderID, timestamp)
+//           ^ cursor anywhere on line
+// ci, → selects "userID" (inside first comma pair)
+// ca, → selects "userID," (including comma)
+// c2i, → selects "orderID" (second comma-separated item)
+
+// Struct field tags (separated by colons)
+type User struct {
+    Name string `json:"name" db:"user_name"`
+    //          ^ cursor here
+    // ci: → selects "name"
+    // cin: → selects "user_name" (next colon pair)
+}
+
+// Error messages (separated by colons)
+fmt.Errorf("user: not found: %s", userID)
+//         ^ cursor here
+// ci: → selects "user"
+// cin: → selects "not found"
+```
+
+**2. Argument text objects:**
+
+Special handling for function arguments and list items.
+
+Syntax: `cia` (inside argument) or `caa` (around argument, includes separator)
+
+```go
+// Function call
+ProcessPayment(userID, amount, currency, timestamp)
+//                     ^ cursor here
+// cia → selects "amount"
+// caa → selects ", amount"
+// daa → deletes ", amount" (including separator)
+
+// Slice literal
+items := []string{"apple", "banana", "cherry"}
+//                         ^ cursor here
+// cia → selects "banana"
+// caa → selects ", \"banana\""
+// via → visual select "banana"
+
+// Method chain
+user.WithName("John").WithAge(25).WithEmail("j@ex.com")
+//            ^ cursor here
+// cia → selects content inside first argument
+```
+
+**3. Seeking (next/last modifiers):**
+
+Find and operate on text objects without moving cursor first.
+
+- `n` modifier: next occurrence (forward)
+- `l` modifier: last occurrence (backward)
+- Number: nth occurrence
+
+```go
+// Parentheses seeking
+result := calculate(add(x, y), multiply(a, b))
+//        ^ cursor at start of line
+// cin( → selects "x, y" (next parentheses)
+// cil( → selects "a, b" (last parentheses)
+// ci2( → selects "a, b" (second parentheses)
+// cin) → same as cin(
+
+// Quote seeking
+log.Printf("user: %s", "error: not found", "status: 404")
+//         ^ cursor here
+// cin" → selects content of next quoted string
+// ci2" → selects "error: not found"
+// ci3" → selects "status: 404"
+
+// Brace seeking
+data := map[string]int{"count": 42, "total": 100}
+//      ^ cursor here
+// cin{ → selects everything inside next braces
+// cin} → same as cin{
+```
+
+**4. Pair text objects (enhanced):**
+
+Works with all bracket types: `()` `[]` `{}` `<>` and quotes: `"` `'` `` ` ``
+
+```go
+// Multiple parentheses levels
+if (user.Active && (user.Role == "admin" || user.Level > 5)) {
+//                  ^ cursor here
+    // ci( → selects current parentheses content
+    // cin( → selects next parentheses (if outside current)
+    // ca( → selects including parentheses
+}
+
+// Nested brackets
+users := []map[string][]int{{"counts": []int{1, 2, 3}}}
+//       ^ cursor here
+// ci[ → selects entire map content
+// cin] → seeks to next bracket
+// ci{ → selects map content
+```
+
+**5. Quote objects (seeking):**
+
+```go
+// Multiple strings
+msg := fmt.Sprintf("user: %s, order: %s, status: %s", user, order, status)
+//                 ^ cursor here
+// ci" → selects "user: %s, order: %s, status: %s"
+// cin" → selects next string (after cursor)
+// cil" → selects last string (before cursor)
+```
+
+**Common operations**:
+
+| Operation | Meaning | Example |
+|-----------|---------|---------|
+| `ci,` | Change inside commas | Function arguments |
+| `ca,` | Change around commas | Include separator |
+| `di,` | Delete inside commas | Remove item |
+| `da,` | Delete around commas | Remove item + separator |
+| `vi,` | Visual select inside | Highlight item |
+| `cin(` | Change in next parens | Seek forward |
+| `cil)` | Change in last parens | Seek backward |
+| `cia` | Change inside argument | Function arg |
+| `daa` | Delete an argument | Remove arg + comma |
+| `ci:` | Change inside colons | Struct tags |
+| `cin"` | Change in next quotes | Next string |
+
+**Example workflows**:
+
+*Refactor function arguments:*
+```go
+// Remove middle argument
+ProcessOrder(userID, orderID, timestamp)
+//                   ^ cursor here
+// daa → Result: ProcessOrder(userID, timestamp)
+
+// Change argument value
+CreateUser("John", 25, "admin")
+//                 ^ cursor here
+// cia → Select "25", type "30" → Result: CreateUser("John", 30, "admin")
+```
+
+*Edit struct tags:*
+```go
+type User struct {
+    Name string `json:"name" db:"user_name"`
+    //                       ^ cursor here
+    // cin: → Select "user_name"
+    // Type "username" → Result: `json:"name" db:"username"`
+}
+```
+
+*Work with nested structures:*
+```go
+config := Config{
+    Server: ServerConfig{
+        Host: "localhost",
+        Port: 8080,
+    },
+}
+// Cursor on "Config" line
+// cin{ → Select outer struct content
+// cin{ (again) → Select inner struct content
+```
+
+*Modify error messages:*
+```go
+return fmt.Errorf("validation error: field: %s: value too short", field)
+//                                  ^ cursor here
+// ci: → Select "field"
+// cin: → Select "%s"
+// ci3: → Select "value too short"
+```
+
+**Integration with other plugins**:
+- Works with vim-repeat: Use `.` to repeat targets operations
+- Works with vim-sandwich: Combine seeking with surround operations
+- Works with vim-commentary: Comment text objects found with seeking
+
+**Configuration**: None needed - works out of the box (`event = "VeryLazy"` in `lua/plugin_specs.lua`)
+
+---
