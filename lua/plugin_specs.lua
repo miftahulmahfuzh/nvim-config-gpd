@@ -324,26 +324,6 @@ local plugin_specs = {
   -- Plugin to manipulate character pairs quickly
   { "machakann/vim-sandwich", event = "VeryLazy" },
 
-  -- Only use these plugin on Windows and Mac and when LaTeX is installed
-  {
-    "lervag/vimtex",
-    enabled = function()
-      return utils.executable("latex")
-    end,
-    ft = { "tex" },
-  },
-
-  -- Since tmux is only available on Linux and Mac, we only enable these plugins
-  -- for Linux and Mac
-  -- .tmux.conf syntax highlighting and setting check
-  {
-    "tmux-plugins/vim-tmux",
-    enabled = function()
-      return utils.executable("tmux")
-    end,
-    ft = { "tmux" },
-  },
-
   -- Modern matchit implementation
   { "andymass/vim-matchup", event = "BufRead" },
   { "tpope/vim-scriptease", cmd = { "Scriptnames", "Messages", "Verbose" } },
