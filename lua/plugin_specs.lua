@@ -398,15 +398,6 @@ local plugin_specs = {
     end,
   },
   {
-    -- show hint for code actions, the user can also implement code actions themselves,
-    -- see discussion here: https://github.com/neovim/neovim/issues/14869
-    "kosayoda/nvim-lightbulb",
-    config = function()
-      require("config.lightbulb")
-    end,
-    event = "LspAttach",
-  },
-  {
     "Bekaboo/dropbar.nvim",
     event = "VeryLazy",
   },
