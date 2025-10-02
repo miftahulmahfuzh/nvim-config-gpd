@@ -124,7 +124,7 @@ local plugin_specs = {
       require("mini.icons").mock_nvim_web_devicons()
       require("mini.icons").tweak_lsp_kind()
     end,
-    lazy = true,
+    priority = 1000,
   },
 
   {
