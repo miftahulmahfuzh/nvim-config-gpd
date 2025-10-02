@@ -242,3 +242,67 @@ api.nvim_create_autocmd("BufReadPre", {
     end
   end,
 })
+
+api.nvim_create_autocmd("BufWritePre", {
+	group = api.nvim_create_augroup("auto_format_lua_on_save", { clear = true }),
+	pattern = "*.lua",
+	desc = "Format Lua file with stylua on save",
+	callback = function()
+		local cursor_pos = vim.api.nvim_win_get_cursor(0)
+		vim.cmd("silent %!stylua -")
+		vim.api.nvim_win_set_cursor(0, cursor_pos)
+	end,
+})
+
+-- Format JS, TS, HTML, CSS files with prettierd on save
+api.nvim_create_autocmd("BufWritePre", {
+	group = api.nvim_create_augroup("auto_format_prettierd_on_save", { clear = true }),
+	pattern = {
+		-- "*.html",
+		"*.css",
+		"*.javascript",
+		"*.javascriptreact",
+		"*.typescript",
+		"*.typescriptreact",
+		"*.js",
+		"*.jsx",
+		"*.ts",
+		"*.tsx",
+	},
+	desc = "Format web development files with prettierd on save",
+	callback = function()
+		local cursor_pos = vim.api.nvim_win_get_cursor(0)
+		vim.cmd("silent %!prettierd %")
+		vim.api.nvim_win_set_cursor(0, cursor_pos)
+	end,
+})
+
+-- Format Python files with ruff on save (with error handling)
+api.nvim_create_autocmd("BufWritePre", {
+	group = api.nvim_create_augroup("auto_format_python_on_save", { clear = true }),
+	pattern = "*.py",
+	desc = "Format Python file with ruff on save",
+	callback = function()
+		-- Check if ruff is available
+		if vim.fn.executable("ruff") == 0 then
+			vim.notify("ruff not found. Please install it via Mason.", vim.log.levels.WARN)
+			return
+		end
+
+		local cursor_pos = vim.api.nvim_win_get_cursor(0)
+		local original_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+		-- Format with ruff
+		local success = pcall(function()
+			vim.cmd("silent %!ruff format --stdin-filename % -")
+		end)
+
+		if not success then
+			-- Restore original content if formatting failed
+			vim.api.nvim_buf_set_lines(0, 0, -1, false, original_content)
+			vim.notify("Python formatting failed", vim.log.levels.ERROR)
+		end
+
+		vim.api.nvim_win_set_cursor(0, cursor_pos)
+	end,
+})

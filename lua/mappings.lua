@@ -208,32 +208,6 @@ keymap.set("c", "<C-A>", "<HOME>")
 -- Delete the character to the right of the cursor
 keymap.set("i", "<C-D>", "<DEL>")
 
-keymap.set("n", "<leader>cb", function()
-  local cnt = 0
-  local blink_times = 7
-  local timer = uv.new_timer()
-  if timer == nil then
-    return
-  end
-
-  timer:start(
-    0,
-    100,
-    vim.schedule_wrap(function()
-      vim.cmd([[
-      set cursorcolumn!
-      set cursorline!
-    ]])
-
-      if cnt == blink_times then
-        timer:close()
-      end
-
-      cnt = cnt + 1
-    end)
-  )
-end, { desc = "show cursor" })
-
 keymap.set("n", "q", function()
   vim.print("q is remapped to Q in Normal mode!")
 end)
@@ -247,7 +221,36 @@ end, {
   desc = "close floating win",
 })
 
+-- Exit insert mode and save with jk
+keymap.set("i", "jk", "<Esc>:write<CR>", { silent = true, desc = "exit insert mode and save" })
+
 -- Colorscheme picker
 vim.keymap.set("n", "<leader>cc", function()
 	require("colorscheme_picker").open()
 end, { desc = "Choose a colorscheme" })
+
+-- Changes CWD to the file's directory,
+-- but copies the FULL file path (including filename) to the clipboard.
+keymap.set("n", "<leader>cd", function()
+	-- Get the full path of the current file (e.g., /path/to/file.go)
+	local full_path = vim.fn.expand("%:p")
+
+	-- Get just the directory part for the lcd command (e.g., /path/to)
+	local file_dir = vim.fn.expand("%:p:h")
+
+	-- Handle case where buffer is not saved and has no path
+	if full_path == "" then
+		vim.notify("Buffer has no file path", vim.log.levels.INFO, { title = "CWD & Copy" })
+		return
+	end
+
+	-- 1. Change the 'local' (window-specific) working directory
+	vim.cmd("lcd " .. vim.fn.fnameescape(file_dir))
+
+	-- 2. Set the system clipboard register '+' to the FULL path
+	vim.fn.setreg("+", full_path)
+
+	-- 3. Display a confirmation message showing what was copied
+	local message = string.format("Path copied: %s", full_path)
+	vim.notify(message, vim.log.levels.INFO, { title = "Path Copied & CWD Set" })
+end, { desc = "Change CWD to dir & copy full file path" })

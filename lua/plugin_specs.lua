@@ -423,6 +423,71 @@ local plugin_specs = {
     ---@type quicker.SetupOptions
     opts = {},
   },
+  	{
+		"williamboman/mason.nvim",
+		cmd = "Mason",
+		config = function()
+			require("mason").setup()
+			-- Ensure gofumpt is installed
+			require("mason-registry").get_package("gofumpt"):install()
+		end,
+	},
+	{
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		config = function()
+			require("mason-tool-installer").setup({
+				ensure_installed = {
+					"gofumpt",
+					"stylua",
+					"prettierd",
+				},
+				auto_update = true,
+				run_on_start = true,
+			})
+		end,
+	},
+	{
+		"williamboman/mason-lspconfig.nvim",
+		-- This plugin makes sure that your lspconfig is aware of servers installed with mason
+		dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+		config = function()
+			require("mason-lspconfig").setup({
+				-- A list of servers to automatically install if they're not already installed
+				ensure_installed = { "lua_ls", "yamlls", "bashls", "ruff", "ts_ls", "gopls", "html", "cssls" },
+			})
+		end,
+	},
+	-- Go development
+	{
+		"ray-x/go.nvim",
+		dependencies = { -- Dependencies are optional, but recommended
+			"ray-x/guihua.lua",
+			"neovim/nvim-lspconfig",
+			"nvim-treesitter/nvim-treesitter",
+		},
+		config = function()
+			require("go").setup({
+				diag_signs = false,
+				diag_virtual_text = false,
+				diag_underline = false,
+				gofmt = "gofumpt", -- Use gofumpt for formatting
+				run_in_floaterm = false, -- Optional: Run commands in a floating terminal
+			})
+			-- Set up autocommand to format Go files on save
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = vim.api.nvim_create_augroup("go_format_on_save", { clear = true }),
+				pattern = { "*.go" },
+				callback = function()
+					require("go.format").gofmt()
+				end,
+				desc = "Format Go file with gofumpt on BufWritePre",
+			})
+		end,
+		event = { "CmdlineEnter" },
+		ft = { "go", "gomod" },
+		build = ":GoUpdateBinaries",
+	},
 }
 
 ---@diagnostic disable-next-line: missing-fields
