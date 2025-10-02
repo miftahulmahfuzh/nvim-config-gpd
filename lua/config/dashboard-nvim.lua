@@ -63,10 +63,23 @@ local function create_dashboard()
   -- Load ASCII art
   local lines = load_ascii_art(header_file_path)
 
-  -- Center the content vertically
+  -- Find the longest line for horizontal centering
+  local max_width = 0
+  for _, line in ipairs(lines) do
+    max_width = math.max(max_width, vim.fn.strdisplaywidth(line))
+  end
+
+  -- Get window dimensions
   local win_height = api.nvim_win_get_height(0)
+  local win_width = api.nvim_win_get_width(0)
+
+  -- Calculate vertical padding (center vertically)
   local content_height = #lines
   local top_padding = math.max(0, math.floor((win_height - content_height) / 2))
+
+  -- Calculate horizontal padding (center horizontally)
+  local left_padding = math.max(0, math.floor((win_width - max_width) / 2))
+  local padding_str = string.rep(" ", left_padding)
 
   -- Add top padding
   local padded_lines = {}
@@ -74,9 +87,9 @@ local function create_dashboard()
     table.insert(padded_lines, "")
   end
 
-  -- Add content
+  -- Add content with horizontal centering
   for _, line in ipairs(lines) do
-    table.insert(padded_lines, line)
+    table.insert(padded_lines, padding_str .. line)
   end
 
   -- Set buffer content
