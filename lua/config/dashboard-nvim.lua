@@ -72,7 +72,7 @@ conf.center = {
     icon = "󰈢  ",
     desc = "Recently opened files                   ",
     action = "FzfLua oldfiles",
-    key = "<Leader> f r",
+    key = "<Leader> f e",
   },
   {
     icon = "󰈬  ",
