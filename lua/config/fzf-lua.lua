@@ -1,6 +1,14 @@
+local actions = require("fzf-lua.actions")
+
 require("fzf-lua").setup {
   defaults = {
     file_icons = "mini",
+    actions = {
+      ["default"] = actions.file_edit,
+      ["ctrl-x"] = actions.file_split,
+      ["ctrl-l"] = actions.file_vsplit,
+      ["ctrl-t"] = actions.file_tabedit,
+    },
   },
   winopts = {
     row = 0.5,
