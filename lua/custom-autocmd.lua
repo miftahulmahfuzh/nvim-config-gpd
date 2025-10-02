@@ -248,9 +248,37 @@ api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*.lua",
 	desc = "Format Lua file with stylua on save",
 	callback = function()
+		-- Skip formatting if stylua is not available
+		if vim.fn.executable("stylua") == 0 then
+			return
+		end
+
 		local cursor_pos = vim.api.nvim_win_get_cursor(0)
-		vim.cmd("silent %!stylua -")
-		vim.api.nvim_win_set_cursor(0, cursor_pos)
+		local original_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+		-- Try formatting
+		local success = pcall(function()
+			vim.cmd("silent %!stylua -")
+		end)
+
+		-- Check if formatting actually worked by looking at shell error code
+		if vim.v.shell_error ~= 0 or not success then
+			-- Restore original content
+			vim.api.nvim_buf_set_lines(0, 0, -1, false, original_content)
+
+			-- Get error output and show in new buffer
+			local error_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+			vim.schedule(function()
+				vim.cmd("new")
+				vim.api.nvim_buf_set_lines(0, 0, -1, false, { "Stylua formatting failed:", "" })
+				vim.api.nvim_buf_set_lines(0, 2, -1, false, error_lines)
+				vim.bo.buftype = "nofile"
+				vim.bo.bufhidden = "wipe"
+				vim.bo.filetype = "text"
+			end)
+		else
+			vim.api.nvim_win_set_cursor(0, cursor_pos)
+		end
 	end,
 })
 
@@ -271,9 +299,37 @@ api.nvim_create_autocmd("BufWritePre", {
 	},
 	desc = "Format web development files with prettierd on save",
 	callback = function()
+		-- Skip formatting if prettierd is not available
+		if vim.fn.executable("prettierd") == 0 then
+			return
+		end
+
 		local cursor_pos = vim.api.nvim_win_get_cursor(0)
-		vim.cmd("silent %!prettierd %")
-		vim.api.nvim_win_set_cursor(0, cursor_pos)
+		local original_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+		-- Try formatting
+		local success = pcall(function()
+			vim.cmd("silent %!prettierd %")
+		end)
+
+		-- Check if formatting actually worked by looking at shell error code
+		if vim.v.shell_error ~= 0 or not success then
+			-- Restore original content
+			vim.api.nvim_buf_set_lines(0, 0, -1, false, original_content)
+
+			-- Get error output and show in new buffer
+			local error_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+			vim.schedule(function()
+				vim.cmd("new")
+				vim.api.nvim_buf_set_lines(0, 0, -1, false, { "Prettierd formatting failed:", "" })
+				vim.api.nvim_buf_set_lines(0, 2, -1, false, error_lines)
+				vim.bo.buftype = "nofile"
+				vim.bo.bufhidden = "wipe"
+				vim.bo.filetype = "text"
+			end)
+		else
+			vim.api.nvim_win_set_cursor(0, cursor_pos)
+		end
 	end,
 })
 
