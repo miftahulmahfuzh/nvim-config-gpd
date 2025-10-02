@@ -113,6 +113,14 @@ keymap.set("n", "<leader>v", "printf('`[%s`]', getregtype()[0])", {
 -- see https://vim.fandom.com/wiki/Set_working_directory_to_the_current_file
 keymap.set("n", "<leader>cd", "<cmd>lcd %:p:h<cr><cmd>pwd<cr>", { desc = "change cwd" })
 
+-- Direct tab navigation
+for i = 1, 9 do
+  keymap.set("n", "<leader>" .. i, "<cmd>tabnext " .. i .. "<cr>", {
+    desc = "Go to tab " .. i,
+    silent = true,
+  })
+end
+
 -- Use Esc to quit builtin terminal
 keymap.set("t", "<Esc>", [[<c-\><c-n>]])
 
