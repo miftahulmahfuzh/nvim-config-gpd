@@ -1,23 +1,34 @@
 -- /home/miftah/.config/nvim/lua/config/dashboard-nvim.lua
+-- Custom minimal dashboard - shows only ASCII art on startup
 
 local api = vim.api
-local keymap = vim.keymap
-local dashboard = require("dashboard")
+
+-- ============================================================================
+-- CONFIGURATION
+-- ============================================================================
+
+-- Define the ASCII art file to display
+-- local fname = "donkey_head"
+-- local fname = "death_eater"
+-- local fname = "dragon_1"
+-- local fname = "shaggy"
+local fname = "bikini"
+local header_file_path = vim.fn.stdpath("config") .. "/ascii_art/" .. fname .. ".txt"
+
+-- ============================================================================
+-- HELPER FUNCTIONS
+-- ============================================================================
 
 ---
 -- Reads an ASCII art file and returns its content as a table of strings.
--- Each line in the file becomes a separate string in the table.
---
 -- @param file_path The absolute path to the text file.
--- @return A table of strings for the header. Returns a fallback header on error.
-local function load_header_from_file(file_path)
-  local header_lines = {}
-  -- pcall runs the function in "protected mode" to catch errors gracefully
+-- @return A table of strings for the header.
+local function load_ascii_art(file_path)
+  local lines = {}
   local success, file = pcall(io.open, file_path, "r")
 
   if not success or not file then
-    vim.notify("Dashboard: Could not open header file: " .. file_path, vim.log.levels.WARN)
-    -- Return a default fallback header if the file cannot be opened
+    -- Return a default fallback header
     return {
       "                                                       ",
       " ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
@@ -27,114 +38,98 @@ local function load_header_from_file(file_path)
       " ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
       " ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
       "                                                       ",
-      "           Error: Could not load header file.          ",
-      "                                                       ",
     }
   end
 
   for line in file:lines() do
-    table.insert(header_lines, line)
+    table.insert(lines, line)
   end
   file:close()
 
-  -- If the file was empty, return a simple message
-  if #header_lines == 0 then
-    return { "Header file is empty." }
+  return lines
+end
+
+---
+-- Creates and displays the dashboard buffer
+local function create_dashboard()
+  local buf = api.nvim_create_buf(false, true)
+
+  -- Set buffer options
+  api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  api.nvim_buf_set_option(buf, "buftype", "nofile")
+  api.nvim_buf_set_option(buf, "swapfile", false)
+  api.nvim_buf_set_option(buf, "filetype", "dashboard")
+
+  -- Load ASCII art
+  local lines = load_ascii_art(header_file_path)
+
+  -- Center the content vertically
+  local win_height = api.nvim_win_get_height(0)
+  local content_height = #lines
+  local top_padding = math.max(0, math.floor((win_height - content_height) / 2))
+
+  -- Add top padding
+  local padded_lines = {}
+  for _ = 1, top_padding do
+    table.insert(padded_lines, "")
   end
 
-  --- ADDED: Add two empty lines for padding after the header content.
-  -- This will apply to both the loaded file and the fallback header.
-  table.insert(header_lines, "")
-  table.insert(header_lines, "")
+  -- Add content
+  for _, line in ipairs(lines) do
+    table.insert(padded_lines, line)
+  end
 
-  return header_lines
+  -- Set buffer content
+  api.nvim_buf_set_lines(buf, 0, -1, false, padded_lines)
+  api.nvim_buf_set_option(buf, "modifiable", false)
+
+  -- Switch to the dashboard buffer
+  api.nvim_win_set_buf(0, buf)
+
+  -- Set window options
+  vim.opt_local.number = false
+  vim.opt_local.relativenumber = false
+  vim.opt_local.cursorline = false
+  vim.opt_local.cursorcolumn = false
+  vim.opt_local.colorcolumn = ""
+  vim.opt_local.list = false
+  vim.opt_local.signcolumn = "no"
+  vim.opt_local.foldcolumn = "0"
+  vim.opt_local.statuscolumn = ""
+
+  -- Set keymaps
+  local opts = { buffer = buf, silent = true, nowait = true }
+  vim.keymap.set("n", "q", ":qa<CR>", opts)
+  vim.keymap.set("n", "e", ":enew<CR>", opts)
 end
 
 -- ============================================================================
--- CONFIGURATION
+-- AUTOCOMMANDS
 -- ============================================================================
 
--- Set this to true to show only the ASCII art header.
--- Set to false to show the header and the interactive menu.
-local image_only = true
-
-local conf = {}
-
--- Define the path to your header file.
--- This assumes 'donkey_head.txt' is in your nvim/ascii_art directory
--- (e.g., ~/.config/nvim/ascii_art/donkey_head.txt)
--- local fname = "donkey_head"
--- local fname = "death_eater"
--- local fname = "dragon_1"
--- local fname = "shaggy"
-local fname = "bikini"
-local header_file_path = vim.fn.stdpath("config") .. "/ascii_art/" .. fname .. ".txt"
-
--- Load the header dynamically from the specified text file
-conf.header = load_header_from_file(header_file_path)
-
--- Conditionally set the center content based on the 'image_only' flag
-if not image_only then
-  conf.center = {
-    {
-      icon = "󰈞  ",
-      desc = "Find  File                              ",
-      action = "FzfLua files",
-      key = "<Leader> f f",
-    },
-    {
-      icon = "󰈢  ",
-      desc = "Recently opened files                   ",
-      action = "FzfLua oldfiles",
-      key = "<Leader> f e",
-    },
-    {
-      icon = "󰈬  ",
-      desc = "Project grep                            ",
-      action = "FzfLua live_grep",
-      key = "<Leader> f g",
-    },
-    {
-      icon = "  ",
-      desc = "Open Nvim config                        ",
-      action = "tabnew $MYVIMRC | tcd %:p:h",
-      key = "<Leader> e v",
-    },
-    {
-      icon = "  ",
-      desc = "New file                                ",
-      action = "enew",
-      key = "e",
-    },
-    {
-      icon = "󰗼  ",
-      desc = "Quit Nvim                               ",
-      action = "qa",
-      key = "q",
-    },
-  }
-end
-
--- For image_only mode, we intentionally don't set conf.center or conf.footer
--- Leaving them unset allows the dashboard to render just the header without errors
-
--- ============================================================================
--- SETUP
--- ============================================================================
-
-dashboard.setup {
-  theme = "doom",
-  shortcut_type = "number",
-  config = conf,
-}
-
-api.nvim_create_autocmd("FileType", {
-  pattern = "dashboard",
-  group = api.nvim_create_augroup("dashboard_enter", { clear = true }),
+-- Show dashboard on startup if no files are opened
+api.nvim_create_autocmd("VimEnter", {
+  group = api.nvim_create_augroup("CustomDashboard", { clear = true }),
   callback = function()
-    -- These keymaps allow you to quit (q) or open a new file (e)
-    -- even when the menu is not visible.
-    keymap.set("n", "q", ":qa<CR>", { buffer = true, silent = true })
-    keymap.set("n", "e", ":enew<CR>", { buffer = true, silent = true })
+    -- Only show dashboard if we started with no files
+    if vim.fn.argc() == 0 and vim.fn.line2byte("$") == -1 then
+      create_dashboard()
+    end
+  end,
+})
+
+-- Clean up when leaving dashboard
+api.nvim_create_autocmd("BufLeave", {
+  group = api.nvim_create_augroup("CustomDashboardCleanup", { clear = true }),
+  pattern = "*",
+  callback = function()
+    if vim.bo.filetype == "dashboard" then
+      -- Wipe the dashboard buffer when leaving
+      vim.schedule(function()
+        if api.nvim_buf_is_valid(vim.fn.bufnr()) then
+          vim.cmd("bwipeout! " .. vim.fn.bufnr())
+        end
+      end)
+    end
   end,
 })
