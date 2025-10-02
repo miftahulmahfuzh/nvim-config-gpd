@@ -57,9 +57,6 @@ M.colorscheme_conf = {
     vim.g.material_style = "darker"
     use_theme("material")
   end,
-  arctic = function()
-    use_theme("arctic")
-  end,
   kanagawa = function()
     use_theme("kanagawa-dragon")
   end,

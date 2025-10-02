@@ -15,11 +15,6 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- check if firenvim is active
-local firenvim_not_active = function()
-  return not vim.g.started_by_firenvim
-end
-
 local plugin_specs = {
   -- auto-completion engine
   { "hrsh7th/cmp-nvim-lsp", lazy = true },
@@ -99,16 +94,16 @@ local plugin_specs = {
     ft = { "markdown" },
   },
   -- A list of colorscheme plugin you may want to try. Find what suits you.
-  { "navarasu/onedark.nvim", lazy = true },
-  { "sainnhe/edge", lazy = true },
-  { "sainnhe/sonokai", lazy = true },
-  { "sainnhe/gruvbox-material", lazy = true },
-  { "sainnhe/everforest", lazy = true },
-  { "EdenEast/nightfox.nvim", lazy = true },
-  { "catppuccin/nvim", name = "catppuccin", lazy = true },
-  { "olimorris/onedarkpro.nvim", lazy = true },
-  { "marko-cerovac/material.nvim", lazy = true },
-  { "rebelot/kanagawa.nvim", lazy = true },
+  { "navarasu/onedark.nvim", priority = 1000 },
+  { "sainnhe/edge", priority = 1000 },
+  { "sainnhe/sonokai", priority = 1000 },
+  { "sainnhe/gruvbox-material", priority = 1000 },
+  { "sainnhe/everforest", priority = 1000 },
+  { "EdenEast/nightfox.nvim", priority = 1000 },
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  { "olimorris/onedarkpro.nvim", priority = 1000 },
+  { "marko-cerovac/material.nvim", priority = 1000 },
+  { "rebelot/kanagawa.nvim", priority = 1000 },
   { "miikanissi/modus-themes.nvim", priority = 1000 },
   { "wtfox/jellybeans.nvim", priority = 1000 },
   { "projekt0n/github-nvim-theme", name = "github-theme" },
@@ -135,7 +130,6 @@ local plugin_specs = {
   {
     "nvim-lualine/lualine.nvim",
     event = "BufRead",
-    cond = firenvim_not_active,
     config = function()
       require("config.lualine")
     end,
@@ -144,7 +138,6 @@ local plugin_specs = {
   {
     "akinsho/bufferline.nvim",
     event = { "BufEnter" },
-    cond = firenvim_not_active,
     config = function()
       require("config.bufferline")
     end,
@@ -153,7 +146,6 @@ local plugin_specs = {
   -- fancy start screen
   {
     "nvimdev/dashboard-nvim",
-    cond = firenvim_not_active,
     config = function()
       require("config.dashboard-nvim")
     end,
@@ -328,42 +320,7 @@ local plugin_specs = {
   { "andymass/vim-matchup", event = "BufRead" },
   { "tpope/vim-scriptease", cmd = { "Scriptnames", "Messages", "Verbose" } },
 
-  -- Asynchronous command execution
-  { "skywind3000/asyncrun.vim", lazy = true, cmd = { "AsyncRun" } },
   { "cespare/vim-toml", ft = { "toml" }, branch = "main" },
-
-  -- Edit text area in browser using nvim
-  {
-    "glacambre/firenvim",
-    enabled = function()
-      return vim.g.is_win or vim.g.is_mac
-    end,
-    -- it seems that we can only call the firenvim function directly.
-    -- Using vim.fn or vim.cmd to call this function will fail.
-    build = function()
-      local firenvim_path = plugin_dir .. "/firenvim"
-      vim.opt.runtimepath:append(firenvim_path)
-      vim.cmd("runtime! firenvim.vim")
-
-      -- macOS will reset the PATH when firenvim starts a nvim process, causing the PATH variable to change unexpectedly.
-      -- Here we are trying to get the correct PATH and use it for firenvim.
-      -- See also https://github.com/glacambre/firenvim/blob/master/TROUBLESHOOTING.md#make-sure-firenvims-path-is-the-same-as-neovims
-      local path_env = vim.env.PATH
-      local prologue = string.format('export PATH="%s"', path_env)
-      -- local prologue = "echo"
-      local cmd_str = string.format(":call firenvim#install(0, '%s')", prologue)
-      vim.cmd(cmd_str)
-    end,
-  },
-  -- Debugger plugin
-  {
-    "sakhnik/nvim-gdb",
-    enabled = function()
-      return vim.g.is_win or vim.g.is_linux
-    end,
-    build = { "bash install.sh" },
-    lazy = true,
-  },
 
   -- Session management plugin
   { "tpope/vim-obsession", cmd = "Obsession" },
