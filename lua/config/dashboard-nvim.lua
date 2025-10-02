@@ -55,9 +55,11 @@ local conf = {}
 -- Define the path to your header file.
 -- This assumes 'donkey_head.txt' is in your nvim/ascii_art directory
 -- (e.g., ~/.config/nvim/ascii_art/donkey_head.txt)
-local fname = "donkey_head"
+-- local fname = "donkey_head"
 -- local fname = "death_eater"
 -- local fname = "dragon_1"
+-- local fname = "shaggy"
+local fname = "bikini"
 local header_file_path = vim.fn.stdpath("config") .. "/ascii_art/" .. fname .. ".txt"
 
 -- Load the header dynamically from the specified text file
