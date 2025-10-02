@@ -30,12 +30,12 @@ keymap.set("n", [[\x]], "<cmd>windo lclose <bar> cclose <cr>", {
 })
 
 -- Delete a buffer, without closing the window, see https://stackoverflow.com/q/4465095/6064933
-keymap.set("n", [[\d]], "<cmd>bprevious <bar> bdelete #<cr>", {
+keymap.set("n", "<leader>d", "<cmd>bprevious <bar> bdelete #<cr>", {
   silent = true,
   desc = "delete current buffer",
 })
 
-keymap.set("n", [[\D]], function()
+keymap.set("n", "<leader>D", function()
   local buf_ids = vim.api.nvim_list_bufs()
   local cur_buf = vim.api.nvim_win_get_buf(0)
 
