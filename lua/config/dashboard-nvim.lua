@@ -50,6 +50,14 @@ local function load_header_from_file(file_path)
   return header_lines
 end
 
+-- ============================================================================
+-- CONFIGURATION
+-- ============================================================================
+
+-- Set this to true to show only the ASCII art header.
+-- Set to false to show the header and the interactive menu.
+local image_only = true
+
 local conf = {}
 
 -- Define the path to your header file.
@@ -65,44 +73,54 @@ local header_file_path = vim.fn.stdpath("config") .. "/ascii_art/" .. fname .. "
 -- Load the header dynamically from the specified text file
 conf.header = load_header_from_file(header_file_path)
 
-conf.center = {
-  {
-    icon = "󰈞  ",
-    desc = "Find  File                              ",
-    action = "FzfLua files",
-    key = "<Leader> f f",
-  },
-  {
-    icon = "󰈢  ",
-    desc = "Recently opened files                   ",
-    action = "FzfLua oldfiles",
-    key = "<Leader> f e",
-  },
-  {
-    icon = "󰈬  ",
-    desc = "Project grep                            ",
-    action = "FzfLua live_grep",
-    key = "<Leader> f g",
-  },
-  {
-    icon = "  ",
-    desc = "Open Nvim config                        ",
-    action = "tabnew $MYVIMRC | tcd %:p:h",
-    key = "<Leader> e v",
-  },
-  {
-    icon = "  ",
-    desc = "New file                                ",
-    action = "enew",
-    key = "e",
-  },
-  {
-    icon = "󰗼  ",
-    desc = "Quit Nvim                               ",
-    action = "qa",
-    key = "q",
-  },
-}
+-- Conditionally set the center content based on the 'image_only' flag
+if not image_only then
+  conf.center = {
+    {
+      icon = "󰈞  ",
+      desc = "Find  File                              ",
+      action = "FzfLua files",
+      key = "<Leader> f f",
+    },
+    {
+      icon = "󰈢  ",
+      desc = "Recently opened files                   ",
+      action = "FzfLua oldfiles",
+      key = "<Leader> f e",
+    },
+    {
+      icon = "󰈬  ",
+      desc = "Project grep                            ",
+      action = "FzfLua live_grep",
+      key = "<Leader> f g",
+    },
+    {
+      icon = "  ",
+      desc = "Open Nvim config                        ",
+      action = "tabnew $MYVIMRC | tcd %:p:h",
+      key = "<Leader> e v",
+    },
+    {
+      icon = "  ",
+      desc = "New file                                ",
+      action = "enew",
+      key = "e",
+    },
+    {
+      icon = "󰗼  ",
+      desc = "Quit Nvim                               ",
+      action = "qa",
+      key = "q",
+    },
+  }
+end
+
+-- For image_only mode, we intentionally don't set conf.center or conf.footer
+-- Leaving them unset allows the dashboard to render just the header without errors
+
+-- ============================================================================
+-- SETUP
+-- ============================================================================
 
 dashboard.setup {
   theme = "doom",
@@ -114,6 +132,8 @@ api.nvim_create_autocmd("FileType", {
   pattern = "dashboard",
   group = api.nvim_create_augroup("dashboard_enter", { clear = true }),
   callback = function()
+    -- These keymaps allow you to quit (q) or open a new file (e)
+    -- even when the menu is not visible.
     keymap.set("n", "q", ":qa<CR>", { buffer = true, silent = true })
     keymap.set("n", "e", ":enew<CR>", { buffer = true, silent = true })
   end,
