@@ -114,6 +114,7 @@ local function create_dashboard()
   local opts = { buffer = buf, silent = true, nowait = true }
   vim.keymap.set("n", "q", ":qa<CR>", opts)
   vim.keymap.set("n", "e", ":enew<CR>", opts)
+  vim.keymap.set("n", "<space>s", require("nvim-tree.api").tree.toggle, opts)
 end
 
 -- ============================================================================
@@ -131,16 +132,20 @@ api.nvim_create_autocmd("VimEnter", {
   end,
 })
 
--- Clean up when leaving dashboard
+-- Clean up when leaving dashboard for a real file
 api.nvim_create_autocmd("BufLeave", {
   group = api.nvim_create_augroup("CustomDashboardCleanup", { clear = true }),
   pattern = "*",
-  callback = function()
-    if vim.bo.filetype == "dashboard" then
-      -- Wipe the dashboard buffer when leaving
+  callback = function(args)
+    if vim.bo[args.buf].filetype == "dashboard" then
+      -- Only wipe dashboard when opening a real file, not special buffers like nvim-tree
       vim.schedule(function()
-        if api.nvim_buf_is_valid(vim.fn.bufnr()) then
-          vim.cmd("bwipeout! " .. vim.fn.bufnr())
+        local current_ft = vim.bo.filetype
+        -- Don't wipe if we're going to a special buffer
+        if current_ft ~= "NvimTree" and current_ft ~= "qf" and current_ft ~= "vista" then
+          if api.nvim_buf_is_valid(args.buf) then
+            vim.cmd("bwipeout! " .. args.buf)
+          end
         end
       end)
     end
