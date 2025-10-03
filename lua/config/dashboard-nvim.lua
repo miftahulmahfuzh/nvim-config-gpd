@@ -102,6 +102,11 @@ local function create_dashboard(split_mode)
     -- Create vertical split on right side
     vim.cmd("rightbelow vsplit")
     api.nvim_win_set_buf(0, buf)
+
+    -- Move cursor to end of line to show full ASCII art
+    vim.schedule(function()
+      vim.cmd("normal! $")
+    end)
   else
     -- Switch to the dashboard buffer (original behavior)
     api.nvim_win_set_buf(0, buf)
