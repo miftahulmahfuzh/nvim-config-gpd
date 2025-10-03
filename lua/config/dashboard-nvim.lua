@@ -50,8 +50,9 @@ local function load_ascii_art(file_path)
 end
 
 ---
--- Creates and displays the dashboard buffer
-local function create_dashboard()
+-- Creates and displays the dashboard buffer in a split window
+-- @param split_mode Optional: "right" to open in vertical split on right
+local function create_dashboard(split_mode)
   local buf = api.nvim_create_buf(false, true)
 
   -- Set buffer options
@@ -96,8 +97,15 @@ local function create_dashboard()
   api.nvim_buf_set_lines(buf, 0, -1, false, padded_lines)
   api.nvim_buf_set_option(buf, "modifiable", false)
 
-  -- Switch to the dashboard buffer
-  api.nvim_win_set_buf(0, buf)
+  -- Open in appropriate window
+  if split_mode == "right" then
+    -- Create vertical split on right side
+    vim.cmd("rightbelow vsplit")
+    api.nvim_win_set_buf(0, buf)
+  else
+    -- Switch to the dashboard buffer (original behavior)
+    api.nvim_win_set_buf(0, buf)
+  end
 
   -- Set window options
   vim.opt_local.number = false
@@ -150,4 +158,19 @@ api.nvim_create_autocmd("BufLeave", {
       end)
     end
   end,
+})
+
+-- ============================================================================
+-- GLOBAL FUNCTION & KEYMAP
+-- ============================================================================
+
+-- Create a global function to show ASCII art in split
+_G.show_ascii_art_split = function()
+  create_dashboard("right")
+end
+
+-- Set keymap to show ASCII art in right split
+vim.keymap.set("n", "<leader>b", _G.show_ascii_art_split, {
+  silent = true,
+  desc = "Show ASCII art in right split"
 })
