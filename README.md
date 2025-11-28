@@ -55,7 +55,7 @@ and how to set up on different platforms (Linux, macOS, and Windows).
 # Features #
 
 + Plugin management via [Lazy.nvim](https://github.com/folke/lazy.nvim).
-+ Code, snippet, word auto-completion via [nvim-cmp](https://github.com/hrsh7th/nvim-cmp).
++ Code, snippet, word auto-completion via [blink.cmp](https://github.com/saghen/blink.cmp).
 + Language server protocol (LSP) support via [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
 + Git integration via [vim-fugitive](https://github.com/tpope/vim-fugitive).
 + Better escaping from insert mode via [better-escape.vim](https://github.com/nvim-zh/better-escape.vim).
@@ -98,7 +98,7 @@ For more UI demos, check [here](https://github.com/jdhao/nvim-config/issues/15).
 <img src="https://github.com/user-attachments/assets/3199e35d-121a-487b-bfd1-58eb69b0b48a" width="800">
 </p>
 
-## Code autocompletion with nvim-cmp
+## Code autocompletion with blink.cmp
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/16662357/128590006-0fc1451f-fac1-49b2-bb95-8aba21bfa44e.gif" width="800">

@@ -60,9 +60,9 @@ The configuration follows a modular structure:
 **Note**: Python LSP servers (pyright, ruff) are being removed as Go is the primary development language.
 
 ### Code Completion
-- Engine: [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
-- Configuration: `lua/config/nvim-cmp.lua`
-- Sources: LSP, path, buffer, omni, cmdline, UltiSnips
+- Engine: [blink.cmp](https://github.com/saghen/blink.cmp)
+- Configuration: `lua/config/blink-cmp.lua`
+- Sources: LSP, path, buffer, snippets
 
 ### Fuzzy Finding
 - Primary: [fzf-lua](https://github.com/ibhagwan/fzf-lua) - `lua/config/fzf-lua.lua`

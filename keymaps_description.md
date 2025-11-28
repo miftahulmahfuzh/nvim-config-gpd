@@ -311,7 +311,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {  󰁂 30
 3. Fill in struct name
 4. Add fields, use `json` snippet for tags
 
-**Integration with nvim-cmp**:
+**Integration with blink.cmp**:
 - Snippets appear in completion menu automatically
 - Select snippet with `<Tab>` and accept with `<Enter>`
 - Or type trigger word and press `<Ctrl-j>` to expand directly
@@ -1410,7 +1410,7 @@ Shows numbered list of all loaded configuration files and plugins:
   2: ~/.config/nvim/lua/plugin_specs.lua
   3: ~/.config/nvim/lua/config/lsp.lua
   4: ~/.local/share/nvim/lazy/lazy.nvim/init.lua
-  5: ~/.local/share/nvim/lazy/nvim-cmp/plugin/cmp.lua
+  5: ~/.local/share/nvim/lazy/blink.cmp/lua/blink/cmp/init.lua
   ...
 ```
 
