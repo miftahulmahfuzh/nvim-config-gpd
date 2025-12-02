@@ -265,3 +265,36 @@ keymap.set("n", "<leader>cd", function()
   local message = string.format("Path copied: %s", full_path)
   vim.notify(message, vim.log.levels.INFO, { title = "Path Copied & CWD Set" })
 end, { desc = "Change CWD to dir & copy full file path" })
+
+-- Prettify selected JSON (Handles both raw and escaped JSON)
+keymap.set("x", "J", function()
+  -- 1. Grab the visual selection
+  vim.cmd('noau normal! "vy')
+  local text = vim.fn.getreg("v")
+
+  -- 2. Clean the input
+  -- If we see escaped quotes (\") or newlines (\n), try to unescape them first.
+  -- This makes it compatible with JSON copied from logs or code strings.
+  if text:find('\\"') or text:find("\\n") then
+    -- Remove the outer quotes if it looks like a string literal
+    text = text:gsub('^"', ""):gsub('"$', "")
+    -- Unescape backslashes
+    text = text:gsub('\\"', '"'):gsub("\\n", "\n")
+  end
+
+  -- 3. Run through jq
+  local job_cmd = "echo " .. vim.fn.shellescape(text) .. " | jq '.'"
+  local output = vim.fn.system(job_cmd)
+
+  -- 4. Check for success
+  if vim.v.shell_error ~= 0 then
+    -- Fallback: If cleaning failed, maybe it was just a weird raw JSON error?
+    -- Let's show the error but NOT modify the buffer.
+    vim.notify("JSON formatting failed: " .. output, vim.log.levels.ERROR)
+    return
+  end
+
+  -- 5. Paste the result
+  vim.fn.setreg("v", output)
+  vim.cmd('normal! gv"vp')
+end, { desc = "Prettify selected JSON" })
