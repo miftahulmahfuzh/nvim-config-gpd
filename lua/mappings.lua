@@ -267,7 +267,7 @@ keymap.set("n", "<leader>cd", function()
 end, { desc = "Change CWD to dir & copy full file path" })
 
 -- Prettify selected JSON (Handles both raw and escaped JSON)
-keymap.set("x", "J", function()
+keymap.set("x", "H", function()
   -- 1. Grab the visual selection
   vim.cmd('noau normal! "vy')
   local text = vim.fn.getreg("v")
