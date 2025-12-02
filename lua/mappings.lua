@@ -298,3 +298,77 @@ keymap.set("x", "J", function()
   vim.fn.setreg("v", output)
   vim.cmd('normal! gv"vp')
 end, { desc = "Prettify selected JSON" })
+
+-- Simple search and replace for visually selected text
+keymap.set("x", "<leader>r", function()
+  -- Get the selected text using a simpler method
+  vim.cmd('normal! "zy')
+  local selected_text = vim.fn.getreg("z")
+
+  -- Clean up the text (remove newlines, trim whitespace)
+  selected_text = selected_text:gsub("\n", ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+  if selected_text and selected_text ~= "" then
+    -- Escape special characters for search
+    local escaped_text = vim.fn.escape(selected_text, [[/\]])
+
+    -- Prompt for replacement
+    local replacement = vim.fn.input("Replace '" .. selected_text .. "' with: ")
+
+    if replacement and replacement ~= "" then
+      -- Perform the replacement across the entire file
+      vim.cmd(":%s/" .. escaped_text .. "/" .. replacement .. "/g")
+      vim.notify("Replaced all '" .. selected_text .. "' with '" .. replacement .. "'")
+    end
+  else
+    vim.notify("No text selected")
+  end
+end, { desc = "search and replace selected text" })
+
+-- Search and replace with confirmation for visually selected text
+keymap.set("x", "<leader>R", function()
+  -- Get the selected text using the same simple method
+  vim.cmd('normal! "zy')
+  local selected_text = vim.fn.getreg("z")
+
+  -- Clean up the text (remove newlines, trim whitespace)
+  selected_text = selected_text:gsub("\n", ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+  if selected_text and selected_text ~= "" then
+    -- Escape special characters for search
+    local escaped_text = vim.fn.escape(selected_text, [[/\]])
+
+    -- Prompt for replacement
+    local replacement = vim.fn.input("Replace '" .. selected_text .. "' with: ")
+
+    if replacement and replacement ~= "" then
+      -- Perform the replacement with confirmation (gc flag)
+      vim.cmd(":%s/" .. escaped_text .. "/" .. replacement .. "/gc")
+    end
+  else
+    vim.notify("No text selected")
+  end
+end, { desc = "search and replace selected text (with confirmation)" })
+
+-- Quick search and replace for word under cursor (normal mode)
+keymap.set("n", "<leader>r", function()
+  local word = vim.fn.expand("<cword>")
+  if word ~= "" then
+    local replacement = vim.fn.input("Replace '" .. word .. "' with: ")
+    if replacement and replacement ~= "" then
+      vim.cmd(":%s/\\<" .. word .. "\\>/" .. replacement .. "/g")
+      vim.notify("Replaced all '" .. word .. "' with '" .. replacement .. "'")
+    end
+  end
+end, { desc = "search and replace word under cursor" })
+
+-- Quick search and replace for word under cursor with confirmation (normal mode)
+keymap.set("n", "<leader>R", function()
+  local word = vim.fn.expand("<cword>")
+  if word ~= "" then
+    local replacement = vim.fn.input("Replace '" .. word .. "' with: ")
+    if replacement and replacement ~= "" then
+      vim.cmd(":%s/\\<" .. word .. "\\>/" .. replacement .. "/gc")
+    end
+  end
+end, { desc = "search and replace word under cursor (with confirmation)" })
