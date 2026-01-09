@@ -2,6 +2,51 @@ local keymap = vim.keymap
 local nvim_tree = require("nvim-tree")
 
 nvim_tree.setup {
+  on_attach = function(bufnr)
+    local api = require("nvim-tree.api")
+
+    -- Include default keymaps
+    api.config.mappings.default_on_attach(bufnr)
+
+    local function insert_filepath()
+      local node = api.tree.get_node_under_cursor()
+
+      if node.type ~= "file" then
+        return
+      end
+
+      local filepath = vim.fn.fnamemodify(node.absolute_path, ":.")
+
+      -- Find a valid window that's not the nvim-tree window
+      local current_win = vim.api.nvim_get_current_win()
+      local target_win = nil
+
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if win ~= current_win then
+          -- Check if this window has a valid buffer
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" then
+            target_win = win
+            break
+          end
+        end
+      end
+
+      if not target_win then
+        vim.notify("No valid window found to insert filepath", vim.log.levels.WARN)
+        return
+      end
+
+      vim.api.nvim_win_call(target_win, function()
+        vim.api.nvim_put({ " @" .. filepath .. " ." }, "c", true, true)
+      end)
+    end
+
+    vim.keymap.set("n", "<C-k>", insert_filepath, {
+      buffer = bufnr,
+      desc = "Insert @filepath . into previous window",
+    })
+  end,
   auto_reload_on_write = true,
   disable_netrw = false,
   hijack_netrw = true,
